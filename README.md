@@ -1,8 +1,8 @@
-# Název mého projektu, programu, hry...
+# Space invaders remake
 
 ## Téma
 
-Tady bude krátký a úderný popis o účelu, významu, funkcionalitě...
+Bude se jednat o 2D hru kdy hráčovi bude přidělena kosmická loď a nepřátelé na něj budou útočit. Svou loď si bude moci vylepšovat a postupovat v progresu hry. Data se budou ukládat po zakoupení určitého itemu anebo po dokončení levelu.
 
 ## Odkazy pro vývoj
 
