@@ -31,6 +31,14 @@ export class Game extends Scene {
         this.background = this.add.image(0, 0, 'background').setOrigin(0);
 
 
+        const button = this.add.text(this.cameras.main.width - 10, 10, 'Main Menu', { fontFamily: 'Arial', fontSize: '16px', color: '#ffffff' })
+        .setOrigin(1, 0)
+        .setInteractive();
+
+        button.on('pointerup', () => {
+            this.scene.start('MainMenu');
+        });
+    
 
         const config2 = {
             key: 'explodeAnimation',

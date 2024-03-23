@@ -26,6 +26,15 @@ export class MainMenu extends Scene
             align: 'center'
         }).setOrigin(0.5).setDepth(100);
 
+        const button = this.add.text(512, 600, 'Start Game', {
+            fontFamily: 'Arial Black', fontSize: 24, color: '#ffffff',
+            backgroundColor: '#000000', padding: { x: 20, y: 10 }
+        }).setOrigin(0.5).setDepth(100).setInteractive();
+
+        button.on('pointerup', () => {
+            this.scene.start('Game');
+        });
+
         EventBus.emit('current-scene-ready', this);
     }
     
