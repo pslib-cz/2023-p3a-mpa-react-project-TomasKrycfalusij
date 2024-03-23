@@ -4,7 +4,7 @@ import { EventBus } from '../EventBus';
 
 export class MainMenu extends Scene
 {
-    background: GameObjects.Image;
+    background: GameObjects.TileSprite;
     logo: GameObjects.Image;
     title: GameObjects.Text;
     logoTween: Phaser.Tweens.Tween | null;
@@ -16,12 +16,12 @@ export class MainMenu extends Scene
 
     create ()
     {
-        this.background = this.add.image(this.cameras.main.centerX, 384, 'background');
+        this.background = this.add.tileSprite(0, 0, this.cameras.main.width + 600, this.cameras.main.height + 600, 'background').setOrigin(0).setScale(1.5);
 
         const logoSize = (this.sys.game.config.width as number) < 360 ? '0.5' : '1';
         this.logo = this.add.image(this.cameras.main.centerX, this.cameras.main.centerY - 100, 'logo')
             .setDepth(100)
-            .setScale(logoSize);
+            .setScale(parseInt(logoSize));
 
         this.title = this.add.text(this.cameras.main.centerX, this.cameras.main.centerY, 'Main Menu', {
             fontFamily: 'Arial Black', fontSize: 38, color: '#ffffff',
