@@ -6,6 +6,7 @@ export class Game extends Scene {
     background: Phaser.GameObjects.Image;
     spaceshipContainer: Phaser.GameObjects.Container;
     spaceship: Phaser.GameObjects.Sprite;
+    spaceshipBoosters: Phaser.GameObjects.Sprite;
     spaceshipFire: Phaser.GameObjects.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
     speed: number;
@@ -18,17 +19,49 @@ export class Game extends Scene {
 
     preload() {
         this.load.image('rocket-boosters', 'assets/Foozle_2DS0011_Void_MainShip/Main Ship/Main Ship - Engines/PNGs/Main Ship - Engines - Supercharged Engine.png');
+        this.load.spritesheet('spaceship-fire', 'assets/Foozle_2DS0011_Void_MainShip/Main Ship/Main Ship - Engine Effects/PNGs/Main Ship - Engines - Supercharged Engine - Spritesheet.png', { frameWidth: 48, frameHeight: 48});
+        this.load.spritesheet('explosion', 'assets/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
         this.load.image('background', 'assets/space-background.jpg');
     }
 
     create() {
         this.camera = this.cameras.main;
         this.background = this.add.image(0, 0, 'background').setOrigin(0);
+
+
+
+        const config2 = {
+            key: 'explodeAnimation',
+            frames: this.anims.generateFrameNumbers('explosion', { start: 0, end: 23 }),
+            frameRate: 20,
+            repeat: -1
+        };
+        this.anims.create(config2);
+        this.add.sprite(400, 300, 'explosion').play('explodeAnimation');
+
         
-        this.spaceshipContainer = this.add.container(this.cameras.main.centerX, this.cameras.main.height);
+        //  ----- ROCKET ----- //
+        this.spaceshipContainer = this.add.container(this.cameras.main.centerX, this.cameras.main.height - 10);
     
         // Add rocket boosters to the container
-        this.spaceshipFire = this.add.sprite(0, -32, 'rocket-boosters', 0).setScale(2);
+        this.spaceshipBoosters = this.add.sprite(0, -32, 'rocket-boosters').setScale(2);
+        this.spaceshipContainer.add(this.spaceshipBoosters);
+
+        this.anims.create({
+            key: 'spaceship-fire-animation-idle',
+            frames: this.anims.generateFrameNumbers('spaceship-fire', { start: 0, end: 3 }),
+            frameRate: 10,
+            repeat: 1
+        });
+        this.anims.create({
+            key: 'spaceship-fire-animation-on',
+            frames: this.anims.generateFrameNumbers('spaceship-fire', { start: 4, end: 7 }),
+            frameRate: 10,
+            repeat: 1
+        });
+
+        this.spaceshipFire = this.add.sprite(0, -32, 'spaceship-fire', 0).setScale(2)
+        // this.spaceshipFire.play('spaceship-fire-animation-idle');
         this.spaceshipContainer.add(this.spaceshipFire);
 
             // Add spaceship to the container
@@ -45,16 +78,34 @@ export class Game extends Scene {
         this.acceleration = 0.1;
         this.maxSpeed = 5;
 
+        //  ----- ROCKET ----- //
+
         EventBus.emit('current-scene-ready', this);
     }
 
     update() {
+        // Check if the left or right arrow key is pressed
+        const isLeftPressed = this.cursors.left.isDown;
+        const isRightPressed = this.cursors.right.isDown;
+        const isUpPressed = this.cursors.up.isDown;
+        const isDownPressed = this.cursors.down.isDown;
+        
+        // Play the appropriate animation based on key state
+        if (isLeftPressed || isRightPressed) {
+            // If a key is pressed, play the 'spaceship-fire-animation-on' animation
+            this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-on').setScale(2);
+        } else {
+            // If no key is pressed, play the 'spaceship-fire-animation-idle' animation
+            this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-idle').setScale(2);
+        }
+        
+        
         // Accelerate if the arrow key is held down
-        if (this.cursors.left.isDown && this.speed > -this.maxSpeed) {
+        if (isLeftPressed && this.speed > -this.maxSpeed) {
             this.speed -= this.acceleration;
             // Rotate the spaceship slightly to the left
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, -0.2, 0.01);
-        } else if (this.cursors.right.isDown && this.speed < this.maxSpeed) {
+        } else if (isRightPressed && this.speed < this.maxSpeed) {
             this.speed += this.acceleration;
             // Rotate the spaceship slightly to the right
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, 0.2, 0.01);
@@ -83,6 +134,7 @@ export class Game extends Scene {
             this.spaceshipContainer.x = Phaser.Math.Clamp(this.spaceshipContainer.x, minX, maxX); // Clamp the position
         }
     }
+    
     
     changeScene() {
         this.scene.start('GameOver');
