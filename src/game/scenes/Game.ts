@@ -9,8 +9,10 @@ export class Game extends Scene {
     spaceshipBoosters: Phaser.GameObjects.Sprite;
     spaceshipFire: Phaser.GameObjects.Sprite;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    speed: number;
-    acceleration: number;
+    verticalSpeed: number;
+    verticalAcceleration: number;
+    horizontalSpeed: number;
+    horizontalAcceleration: number;
     maxSpeed: number;
 
     constructor() {
@@ -73,9 +75,11 @@ export class Game extends Scene {
         // Enable cursor keys
         this.cursors = this.input.keyboard.createCursorKeys();
 
-        // Set initial speed parameters
-        this.speed = 0;
-        this.acceleration = 0.1;
+        // Set initial verticalSpeed parameters
+        this.verticalSpeed = 0;
+        this.verticalAcceleration = 0.1;
+        this.horizontalSpeed = 0;
+        this.horizontalAcceleration = 0.1;
         this.maxSpeed = 5;
 
         //  ----- ROCKET ----- //
@@ -89,49 +93,64 @@ export class Game extends Scene {
         const isRightPressed = this.cursors.right.isDown;
         const isUpPressed = this.cursors.up.isDown;
         const isDownPressed = this.cursors.down.isDown;
-        
+            
         // Play the appropriate animation based on key state
-        if (isLeftPressed || isRightPressed) {
+        if (isLeftPressed || isRightPressed || isUpPressed || isDownPressed) {
             // If a key is pressed, play the 'spaceship-fire-animation-on' animation
             this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-on').setScale(2);
         } else {
             // If no key is pressed, play the 'spaceship-fire-animation-idle' animation
             this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-idle').setScale(2);
         }
-        
-        
-        // Accelerate if the arrow key is held down
-        if (isLeftPressed && this.speed > -this.maxSpeed) {
-            this.speed -= this.acceleration;
-            // Rotate the spaceship slightly to the left
+
+        if (isLeftPressed && this.horizontalSpeed > -this.maxSpeed) {
+            this.horizontalSpeed -= this.horizontalAcceleration;
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, -0.2, 0.01);
-        } else if (isRightPressed && this.speed < this.maxSpeed) {
-            this.speed += this.acceleration;
-            // Rotate the spaceship slightly to the right
+        } else if (isRightPressed && this.horizontalSpeed < this.maxSpeed) {
+            this.horizontalSpeed += this.horizontalAcceleration;
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, 0.2, 0.01);
         } else {
-            // Decelerate gradually if no arrow key is pressed
-            if (this.speed > 0) {
-                this.speed = Math.max(0, this.speed - this.acceleration);
-            } else if (this.speed < 0) {
-                this.speed = Math.min(0, this.speed + this.acceleration);
+            if (this.horizontalSpeed > 0) {
+                this.horizontalSpeed = Math.max(0, this.horizontalSpeed - this.horizontalAcceleration);
+            } else if (this.horizontalSpeed < 0) {
+                this.horizontalSpeed = Math.min(0, this.horizontalSpeed + this.horizontalAcceleration);
             }
-            // Reset the rotation when no arrow key is pressed
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, 0, 0.01);
         }
-    
-        // Move the spaceship based on the current speed
-        this.spaceshipContainer.x += this.speed;
+        
+        if (isUpPressed && this.verticalSpeed > -this.maxSpeed) {
+            this.verticalSpeed -= this.verticalAcceleration;
+        } else if (isDownPressed && this.verticalSpeed < this.maxSpeed) {
+            this.verticalSpeed += this.verticalAcceleration;
+        } else {
+            // Decelerate gradually if no arrow key is pressed
+            if (this.verticalSpeed > 0) {
+                this.verticalSpeed = Math.max(0, this.verticalSpeed - this.verticalAcceleration);
+            } else if (this.verticalSpeed < 0) {
+                this.verticalSpeed = Math.min(0, this.verticalSpeed + this.verticalAcceleration);
+            }
+        }
+                
+        // Move the spaceship based on the current verticalSpeed
+        this.spaceshipContainer.x += this.horizontalSpeed;
+        this.spaceshipContainer.y += this.verticalSpeed;
+        
     
         // Ensure the spaceship stays within the screen boundaries
-        const halfWidth = this.spaceship.width / 2;
+        const halfWidth = this.spaceshipContainer.width / 2;
+        const halfHeight = this.spaceshipContainer.height / 2;
         const minX = halfWidth;
+        const minY = this.cameras.main.height / 2 - halfHeight;
         const maxX = this.cameras.main.width - halfWidth;
+        const maxY = this.cameras.main.height - halfHeight;
     
-        // Check if the spaceship has reached the screen boundaries
-        if (this.spaceshipContainer.x < minX || this.spaceshipContainer.x > maxX) {
-            this.speed = 0; // Stop the spaceship instantly
-            this.spaceshipContainer.x = Phaser.Math.Clamp(this.spaceshipContainer.x, minX, maxX); // Clamp the position
+        if (this.spaceshipContainer.x < minX || this.spaceshipContainer.x > maxX ) {
+            this.horizontalSpeed = 0; // Stop the spaceship instantly
+            this.spaceshipContainer.x = Phaser.Math.Clamp(this.spaceshipContainer.x, minX, maxX);
+        }
+        if (this.spaceshipContainer.y < minY || this.spaceshipContainer.y > maxY) {
+            this.verticalSpeed = 0;
+            this.spaceshipContainer.y = Phaser.Math.Clamp(this.spaceshipContainer.y, minY, maxY);
         }
     }
     
