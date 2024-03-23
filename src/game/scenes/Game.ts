@@ -38,7 +38,6 @@ export class Game extends Scene {
         button.on('pointerup', () => {
             this.scene.start('MainMenu');
         });
-    
 
         const config2 = {
             key: 'explodeAnimation',
@@ -96,6 +95,9 @@ export class Game extends Scene {
     }
 
     update() {
+        // Update the background position based on the player's X position
+        this.background.x = -(this.spaceshipContainer.x * 0.3);
+        this.background.y = -(this.spaceshipContainer.y * 0.3);
         // Check if the left or right arrow key is pressed
         const isLeftPressed = this.cursors.left.isDown;
         const isRightPressed = this.cursors.right.isDown;
@@ -119,9 +121,9 @@ export class Game extends Scene {
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, 0.2, 0.01);
         } else {
             if (this.horizontalSpeed > 0) {
-                this.horizontalSpeed = Math.max(0, this.horizontalSpeed - this.horizontalAcceleration);
+                this.horizontalSpeed = Math.max(0, this.horizontalSpeed - this.horizontalAcceleration / 2);
             } else if (this.horizontalSpeed < 0) {
-                this.horizontalSpeed = Math.min(0, this.horizontalSpeed + this.horizontalAcceleration);
+                this.horizontalSpeed = Math.min(0, this.horizontalSpeed + this.horizontalAcceleration / 2);
             }
             this.spaceshipContainer.rotation = Phaser.Math.Angle.RotateTo(this.spaceshipContainer.rotation, 0, 0.01);
         }
@@ -131,11 +133,10 @@ export class Game extends Scene {
         } else if (isDownPressed && this.verticalSpeed < this.maxSpeed) {
             this.verticalSpeed += this.verticalAcceleration;
         } else {
-            // Decelerate gradually if no arrow key is pressed
             if (this.verticalSpeed > 0) {
-                this.verticalSpeed = Math.max(0, this.verticalSpeed - this.verticalAcceleration);
+                this.verticalSpeed = Math.max(0, this.verticalSpeed - this.verticalAcceleration / 2);
             } else if (this.verticalSpeed < 0) {
-                this.verticalSpeed = Math.min(0, this.verticalSpeed + this.verticalAcceleration);
+                this.verticalSpeed = Math.min(0, this.verticalSpeed + this.verticalAcceleration / 2);
             }
         }
                 
@@ -148,7 +149,7 @@ export class Game extends Scene {
         const halfWidth = this.spaceshipContainer.width / 2;
         const halfHeight = this.spaceshipContainer.height / 2;
         const minX = halfWidth;
-        const minY = this.cameras.main.height / 2 - halfHeight;
+        const minY = this.cameras.main.height / 2 - halfHeight - 200;
         const maxX = this.cameras.main.width - halfWidth;
         const maxY = this.cameras.main.height - halfHeight;
     
