@@ -33,23 +33,21 @@ export class Game extends Scene {
         this.load.image('rocket-boosters', 'assets/Foozle_2DS0011_Void_MainShip/Main Ship/Main Ship - Engines/PNGs/Main Ship - Engines - Supercharged Engine.png');
         this.load.spritesheet('spaceship-fire', 'assets/Foozle_2DS0011_Void_MainShip/Main Ship/Main Ship - Engine Effects/PNGs/Main Ship - Engines - Supercharged Engine - Spritesheet.png', { frameWidth: 48, frameHeight: 48});
         this.load.spritesheet('explosion', 'assets/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+        this.load.image('enemy1', 'public/assets/Foozle_2DS0013_Void_FleetPack_2/Foozle_2DS0013_Void_EnemyFleet_2/Nairan/Designs - Base/PNGs/Nairan - Torpedo Ship - Base.png')
         this.load.image('background', 'assets/spacetile.png');
     }
 
     create() {
 
+        // ----- VALUES ----- //
 
-        /*
-        const spawnEnemies = false;
-        this.spawnTimer = this.time.addEvent({
-            delay: 3000, // 3 seconds interval
-            callback: this.spawnEnemies,
-            callbackScope: this,
-            loop: spawnEnemies
-        });
-        */
-    
-        this.background = this.add.tileSprite(500, 500, this.cameras.main.width + 600, this.cameras.main.height + 600, 'background').setOrigin(0).setScale(1.5);
+        this.verticalSpeed = 0;
+        this.verticalAcceleration = 0.1;
+        this.horizontalSpeed = 0;
+        this.horizontalAcceleration = 0.1;
+        this.maxSpeed = 5;
+
+        this.background = this.add.tileSprite(0, 0, this.cameras.main.width + 500, this.cameras.main.height + 500, 'background').setOrigin(0).setScale(1.5);
 
         this.scoreText = this.add.text(10, 10, this.score.toString(), { fontFamily: 'Arial', fontSize: '16px', color: '#ffffff' });
 
@@ -64,7 +62,7 @@ export class Game extends Scene {
         button.on('pointerup', () => {
             this.scene.start('MainMenu');
         });
-
+        
 
         /*
         const config2 = {
@@ -79,10 +77,9 @@ export class Game extends Scene {
 
         
         //  ----- ROCKET ----- //
+
         this.player = this.add.container(this.cameras.main.centerX, this.cameras.main.height - 10);
-    
-        // Add rocket boosters to the container
-        this.spaceshipBoosters = this.add.sprite(0, -32, 'rocket-boosters').setScale(2);
+        this.spaceshipBoosters = this.physics.add.sprite(0, -32, 'rocket-boosters').setScale(2);
         this.player.add(this.spaceshipBoosters);
 
         this.anims.create({
@@ -98,52 +95,40 @@ export class Game extends Scene {
             repeat: 1
         });
 
-        this.spaceshipFire = this.add.sprite(0, -32, 'spaceship-fire', 0).setScale(2)
+        this.spaceshipFire = this.physics.add.sprite(0, -32, 'spaceship-fire', 0).setScale(2)
         // this.spaceshipFire.play('spaceship-fire-animation-idle');
         this.player.add(this.spaceshipFire);
 
-            // Add spaceship to the container
-        this.spaceship = this.add.sprite(0, 0, 'dude')
+        this.spaceship = this.physics.add.sprite(0, 0, 'spaceship')
             .setScale(2)
             .setOrigin(0.5, 1);
         this.player.add(this.spaceship);
 
-        // Enable cursor keys
+
+        this.physics.world.enable(this.player);
+
+
+        // ----- ENEMIES ----- //
+        const enemies = this.physics.add.group({
+            classType: Enemy,
+            runChildUpdate: true,
+        });
+
+        this.spawnTimer = this.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                const x = Phaser.Math.Between(0, this.cameras.main.width);
+                const enemy = enemies.get(x, -30, 'enemy1', this.player) as Enemy;
+                if (enemy) {
+                    enemy.setScale(1.5).setFlipY(true);
+                }
+            },
+            loop: true
+        });
+
         this.cursors = this.input.keyboard.createCursorKeys();
-
-        // Set initial verticalSpeed parameters
-        this.verticalSpeed = 0;
-        this.verticalAcceleration = 0.1;
-        this.horizontalSpeed = 0;
-        this.horizontalAcceleration = 0.1;
-        this.maxSpeed = 5;
-
-        //  ----- ROCKET ----- //
-
         EventBus.emit('current-scene-ready', this);
     }
-
-    spawnEnemies() {
-        const x = Phaser.Math.Between(0, this.cameras.main.width);
-        const y = -100; // Spawn 100 pixels above the screen
-    
-        // Create the enemy
-        const enemy = new Enemy(this, x, y, 'enemyTexture');
-    
-        // Add physics to the enemy
-        this.physics.add.existing(enemy);
-    
-        // Set velocity to make the enemy move down
-        enemy.setVelocity(0, 100); // Adjust the velocity as needed
-    
-        // Remove the enemy when it's below the screen height
-        enemy.update = () => {
-            if (enemy.y > this.cameras.main.height) {
-                enemy.destroy();
-            }
-        };
-    }
-    
 
     updateScore(value: number) {
         this.score += value;
@@ -159,18 +144,19 @@ export class Game extends Scene {
         this.background.tilePositionY -= 0.3;
         this.background.x = -(this.player.x * 0.3);
         this.background.y = -(this.player.y * 0.3);
+        this.background.tilePositionX += 0.2 * this.horizontalSpeed;
         
         // Check if the left or right arrow key is pressed
         const isLeftPressed = this.cursors.left.isDown;
         const isRightPressed = this.cursors.right.isDown;
         const isUpPressed = this.cursors.up.isDown;
         const isDownPressed = this.cursors.down.isDown;
-    
-        if (isRightPressed) {
-            this.background.tilePositionX += 0.7
+
+        if (isLeftPressed && this.horizontalSpeed == 0) {
+            this.background.tilePositionX -= 0.5
         }
-        else if (isLeftPressed) {
-            this.background.tilePositionX -= 0.7
+        else if (isRightPressed && this.horizontalSpeed == 0) {
+            this.background.tilePositionX += 0.5
         }
             
         // Play the appropriate animation based on key state

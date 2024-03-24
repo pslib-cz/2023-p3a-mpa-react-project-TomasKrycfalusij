@@ -1,21 +1,34 @@
-export default class Enemy extends Phaser.Physics.Arcade.Sprite {
-    speed: number;
+import Phaser from "phaser";
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, frame?: string | number) {
+import Phaser from 'phaser';
+
+export default class Enemy extends Phaser.Physics.Arcade.Sprite {
+    player: Phaser.Physics.Arcade.Sprite;
+
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string, player: Phaser.Physics.Arcade.Sprite, frame?: string | number) {
         super(scene, x, y, texture, frame);
+        this.player = player;
+
+        // Enable physics for the enemy
+        scene.physics.world.enable(this);
+
+        // Set the size of the physics body to match the sprite
+        this.body.setSize(this.width, this.height);
+
+        // Add the enemy to the scene
         scene.add.existing(this);
-        scene.physics.add.existing(this);
-        this.speed = 100; // Constant speed of the enemy, adjust as needed
     }
 
-    update() {
-        // Move the enemy downwards at a constant speed
-        this.y += this.speed * this.scene.game.loop.delta / 1000;
+    protected preUpdate(time: number, delta: number): void {
+        super.preUpdate(time, delta);
 
-        // Check if the enemy has reached the bottom of the screen
-        if (this.y > this.scene.sys.canvas.height) {
-            // If so, remove the enemy from the scene
-            this.destroy();
-        }
+        // Calculate direction vector from the enemy to the player
+        const direction = new Phaser.Math.Vector2(
+            this.player.x - this.x,
+            this.player.y - this.y
+        ).normalize();
+
+        // Set velocity towards the player
+        this.setVelocity(direction.x * 100, direction.y * 100);
     }
 }
