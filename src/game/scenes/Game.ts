@@ -1,6 +1,7 @@
 import { EventBus } from '../EventBus';
 import { Scene } from 'phaser';
-import Enemy from '../objects/enemy';
+import Enemy from '../objects/Enemy';
+import RocketMissile from '../objects/RocketMissile';
 /*
 import { useContext } from 'react';
 import { AppContext, AppContextState } from '../../components/context';
@@ -23,6 +24,8 @@ export class Game extends Scene {
     scoreText: Phaser.GameObjects.Text;
     scoreUpdateInterval: any;
     spawnTimer: Phaser.Time.TimerEvent;
+    scaler: number;
+    RocketMissiles: Phaser.Physics.Arcade.Group;
 
     constructor() {
         super('Game');
@@ -35,11 +38,20 @@ export class Game extends Scene {
         this.load.spritesheet('explosion', 'assets/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
         this.load.image('enemy1', 'public/assets/Foozle_2DS0013_Void_FleetPack_2/Foozle_2DS0013_Void_EnemyFleet_2/Nairan/Designs - Base/PNGs/Nairan - Torpedo Ship - Base.png')
         this.load.image('background', 'assets/spacetile.png');
+        this.load.spritesheet('rocket-missile', 'public/assets/Foozle_2DS0011_Void_MainShip/Main ship weapons/PNGs/Main ship weapon - Projectile - Rocket.png', { frameWidth: 32, frameHeight: 32 });
     }
 
     create() {
 
         // ----- VALUES ----- //
+        let screenWidth = window.innerWidth;
+
+        if (screenWidth > 999) {
+            this.scaler = 1.5;
+        }
+        else {
+            this.scaler = 2;
+        }
 
         this.verticalSpeed = 0;
         this.verticalAcceleration = 0.1;
@@ -47,7 +59,7 @@ export class Game extends Scene {
         this.horizontalAcceleration = 0.1;
         this.maxSpeed = 5;
 
-        this.background = this.add.tileSprite(0, 0, this.cameras.main.width + 500, this.cameras.main.height + 500, 'background').setOrigin(0).setScale(1.5);
+        this.background = this.add.tileSprite(0, 0, this.cameras.main.width + 500, this.cameras.main.height + 500, 'background').setOrigin(0).setScale(this.scaler);
 
         this.scoreText = this.add.text(10, 10, this.score.toString(), { fontFamily: 'Arial', fontSize: '16px', color: '#ffffff' });
 
@@ -76,10 +88,10 @@ export class Game extends Scene {
         */
 
         
-        //  ----- ROCKET ----- //
+        //  ----- PLAYER ----- //
 
         this.player = this.add.container(this.cameras.main.centerX, this.cameras.main.height - 10);
-        this.spaceshipBoosters = this.physics.add.sprite(0, -32, 'rocket-boosters').setScale(2);
+        this.spaceshipBoosters = this.physics.add.sprite(0, -32, 'rocket-boosters').setScale(this.scaler);
         this.player.add(this.spaceshipBoosters);
 
         this.anims.create({
@@ -95,12 +107,12 @@ export class Game extends Scene {
             repeat: 1
         });
 
-        this.spaceshipFire = this.physics.add.sprite(0, -32, 'spaceship-fire', 0).setScale(2)
+        this.spaceshipFire = this.physics.add.sprite(0, -32, 'spaceship-fire', 0).setScale(this.scaler)
         // this.spaceshipFire.play('spaceship-fire-animation-idle');
         this.player.add(this.spaceshipFire);
 
         this.spaceship = this.physics.add.sprite(0, 0, 'spaceship')
-            .setScale(2)
+            .setScale(this.scaler)
             .setOrigin(0.5, 1);
         this.player.add(this.spaceship);
 
@@ -117,17 +129,43 @@ export class Game extends Scene {
         this.spawnTimer = this.time.addEvent({
             delay: 1000,
             callback: () => {
-                const x = Phaser.Math.Between(0, this.cameras.main.width);
-                const enemy = enemies.get(x, -30, 'enemy1', this.player) as Enemy;
-                if (enemy) {
-                    enemy.setScale(1.5).setFlipY(true);
+                if (enemies.getLength() < 5) {
+                    const x = Phaser.Math.Between(0, this.cameras.main.width);
+                    const enemy = enemies.get(x, 30, 'enemy1', this.player) as Enemy;
+                    if (enemy) {
+                        enemy.setScale(this.scaler).setFlipY(true);
+                    }
                 }
+                
             },
             loop: true
         });
 
-        this.cursors = this.input.keyboard.createCursorKeys();
+        // ----- BULLETS ----- //
+
+        this.RocketMissiles = this.physics.add.group({
+            classType: RocketMissile,
+            maxSize: 10, // Limit the number of bullets in the group
+            runChildUpdate: true // Automatically call preUpdate for each bullet
+        });
+
+        this.input.keyboard?.on('keydown-SPACE', () => {
+            this.spawnBullet();
+        });
+
+        this.cursors = this.input.keyboard!.createCursorKeys();
         EventBus.emit('current-scene-ready', this);
+    }
+
+    spawnBullet() {
+        // Get the first available bullet from the group
+        const bullet = this.RocketMissiles.get(this.player.x, this.player.y - 40 * this.scaler, 'rocket-missile');
+        // If a bullet is available, reset it and launch it upwards
+        if (bullet) {
+            bullet.setActive(true);
+            bullet.setVisible(true);
+            bullet.setVelocityY(-500); // Adjust the velocity as needed
+        }
     }
 
     updateScore(value: number) {
@@ -162,10 +200,10 @@ export class Game extends Scene {
         // Play the appropriate animation based on key state
         if (isLeftPressed || isRightPressed || isUpPressed) {
             // If a key is pressed, play the 'spaceship-fire-animation-on' animation
-            this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-on').setScale(2);
+            this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-on').setScale(this.scaler);
         } else {
             // If no key is pressed, play the 'spaceship-fire-animation-idle' animation
-            this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-idle').setScale(2);
+            this.spaceshipFire.playAfterRepeat('spaceship-fire-animation-idle').setScale(this.scaler);
         }
     
         if (isLeftPressed && this.horizontalSpeed > -this.maxSpeed) {
