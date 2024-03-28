@@ -3,6 +3,8 @@ import Player from './components/Player';
 
 const App = () => {
   const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 0 });
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [playerRotation, setPlayerRotation] = useState(0);
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0 });
   const [maxSpeed, setMaxSpeed] = useState(1);
@@ -99,6 +101,26 @@ const App = () => {
     };
   }, [acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight]);
 
+  useEffect(() => {
+    const handleMouseMove = (event) => {
+      setMousePosition({ x: event.clientX, y: event.clientY });
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+    };
+  }, []);
+  useEffect(() => {
+    const playerCenterX = playerPosition.x + playerWidth / 2;
+    const playerCenterY = playerPosition.y + playerHeight / 2;
+    const dx = mousePosition.x - playerCenterX;
+    const dy = mousePosition.y - playerCenterY;
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90; // Subtract 90 degrees for correct alignment
+    setPlayerRotation(angle);
+  }, [mousePosition, playerPosition, playerWidth, playerHeight]);
+
   return (
     <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
@@ -106,8 +128,7 @@ const App = () => {
       onKeyDown={() => {}}
       onKeyUp={() => {}}
     >
-      <Player position={playerPosition} width={playerWidth} height={playerWidth} />
-
+      <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} />
     </div>
   );
 };
