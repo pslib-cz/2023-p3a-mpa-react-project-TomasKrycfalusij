@@ -1,9 +1,0 @@
-.gameBackground {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background-image: url("./assets/backgrounds/spacetile.png");
-    background-repeat: repeat;
-    background-position: 0px 0px;
-    background-size: 50%;
-}
