@@ -12,7 +12,7 @@
 .player {
 
     position: absolute;
-    top: -6px;
+    top: -6%;
     left: 0;
     height: 100%;
     width: 100%;
@@ -24,7 +24,7 @@
 
 .boosters {
     position: absolute;
-    top: 10px;
+    top: 10%;
     left: 0;
     height: 100%;
     width: 100%;
@@ -37,7 +37,7 @@
 
 .boosterFire {
     position: absolute;
-    top: 14px;
+    top: 14%;
     left: 0;
     height: 100%;
     width: 100%;
