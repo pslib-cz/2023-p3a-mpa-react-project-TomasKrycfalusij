@@ -1,7 +1,14 @@
 import React from 'react';
 import PlayerStyle from "./PlayerStyle.module.css";
 
-const Player = ({ position, width, height, rotation }) => {
+interface PlayerProps {
+  position: { x: number; y: number };
+  width: number;
+  height: number;
+  rotation: number;
+}
+
+const Player: React.FC<PlayerProps> = ({ position, width, height, rotation }) => {
   // Adjust rotation to match default orientation
 
   const playerPositioner = {

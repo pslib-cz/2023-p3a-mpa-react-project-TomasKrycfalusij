@@ -23,6 +23,7 @@ const Game: React.FC = () => {
     const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
     const [playerRotation, setPlayerRotation] = useState<number>(0);
     const [missiles, setMissiles] = useState<MissileType[]>([]);
+    const [missileSpeed, setMissileSpeed] = useState<number>(3);
     const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
     const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
     const [maxSpeed, setMaxSpeed] = useState<number>(2);
@@ -33,6 +34,7 @@ const Game: React.FC = () => {
     const [bgX, setBgX] = useState<number>(0);
     const [bgY, setBgY] = useState<number>(0);
     const updateRate: number = 1000 / 200;
+
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -83,20 +85,32 @@ const Game: React.FC = () => {
 
   useEffect(() => {
     const updatePosition = () => {
-      const updatedVelocity = {
-        x: Math.min(maxSpeed, Math.max(-maxSpeed, velocity.x + acceleration.x)),
-        y: Math.min(maxSpeed, Math.max(-maxSpeed, velocity.y + acceleration.y)),
+        const updatedVelocity = {
+          x: Math.min(maxSpeed, Math.max(-maxSpeed, velocity.x + acceleration.x)),
+          y: Math.min(maxSpeed, Math.max(-maxSpeed, velocity.y + acceleration.y)),
+        };
+      
+        setVelocity(updatedVelocity);
+      
+        const updatedPlayerPosition = {
+          x: Math.min(window.innerWidth - playerWidth, Math.max(0, playerPosition.x + updatedVelocity.x)),
+          y: Math.min(window.innerHeight - playerHeight, Math.max(0, playerPosition.y + updatedVelocity.y)),
+        };
+      
+        const hitsBorder =
+          updatedPlayerPosition.x === 0 ||
+          updatedPlayerPosition.x === window.innerWidth - playerWidth ||
+          updatedPlayerPosition.y === 0 ||
+          updatedPlayerPosition.y === window.innerHeight - playerHeight;
+      
+        if (hitsBorder) {
+          setAcceleration({ x: 0, y: 0 });
+          setVelocity({ x: 0, y: 0 });
+        } else {
+          setPlayerPosition(updatedPlayerPosition);
+        }
       };
-
-      setVelocity(updatedVelocity);
-
-      const updatedPlayerPosition = {
-        x: Math.min(window.innerWidth - playerWidth, Math.max(0, playerPosition.x + updatedVelocity.x)),
-        y: Math.min(window.innerHeight - playerHeight, Math.max(0, playerPosition.y + updatedVelocity.y)),
-      };
-
-      setPlayerPosition(updatedPlayerPosition);
-    };
+      
 
     const applyFriction = () => {
       if (acceleration.x === 0) {
@@ -141,21 +155,24 @@ const Game: React.FC = () => {
         const dx = e.clientX - (playerPosition.x + playerWidth / 2);
         const dy = e.clientY - (playerPosition.y + playerHeight / 2);
         const distance = Math.sqrt(dx * dx + dy * dy);
-  
-        // Calculate velocity based on distance
-        const velocityX = (dx / distance) * 5; // Adjust speed as needed
-        const velocityY = (dy / distance) * 5; // Adjust speed as needed
-  
+      
+        const normalizedDx = dx / distance;
+        const normalizedDy = dy / distance;
+      
+        const spawnX = playerPosition.x + playerWidth / 2 + normalizedDx * (playerWidth / 2);
+        const spawnY = playerPosition.y + playerHeight / 2 + normalizedDy * (playerHeight / 2);
+      
         const newMissile: MissileType = {
           id: missiles.length + 1,
-          position: { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
-          velocityX,
-          velocityY,
+          position: { x: spawnX, y: spawnY },
+          velocityX: normalizedDx * missileSpeed,
+          velocityY: normalizedDy * missileSpeed,
           remove: false,
         };
-  
+      
         setMissiles((prevMissiles) => [...prevMissiles, newMissile]);
       };
+      
 
     const updateLoop = setInterval(() => {
       updatePosition();
@@ -198,10 +215,6 @@ const Game: React.FC = () => {
     setBgX(newBgX);
     setBgY(newBgY);
   }, [playerPosition]);
-
-  const handleMissileDestroy = (id: number) => {
-    setMissiles((prevMissiles) => prevMissiles.filter((missile) => missile.id !== id));
-  };
 
   return (
     <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
