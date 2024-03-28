@@ -5,9 +5,12 @@ const App = () => {
   const [playerPosition, setPlayerPosition] = useState({ x: 0, y: 0 });
   const [velocity, setVelocity] = useState({ x: 0, y: 0 });
   const [acceleration, setAcceleration] = useState({ x: 0, y: 0 });
-  const [maxSpeed, setMaxSpeed] = useState(10);
-  const [accelerationRate, setAccelerationRate] = useState(0.3);
-  const [friction, setFriction] = useState(0.05);
+  const [maxSpeed, setMaxSpeed] = useState(1);
+  const [accelerationRate, setAccelerationRate] = useState(0.01);
+  const [friction, setFriction] = useState(0.01);
+  const playerWidth = 80; // Adjust player width
+  const playerHeight = 80; // Adjust player height
+  const updateRate = 1000 / 500; // fps
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -63,8 +66,8 @@ const App = () => {
       setVelocity(updatedVelocity);
 
       const updatedPlayerPosition = {
-        x: playerPosition.x + updatedVelocity.x,
-        y: playerPosition.y + updatedVelocity.y,
+        x: Math.min(window.innerWidth - playerWidth, Math.max(0, playerPosition.x + updatedVelocity.x)),
+        y: Math.min(window.innerHeight - playerHeight, Math.max(0, playerPosition.y + updatedVelocity.y)),
       };
 
       setPlayerPosition(updatedPlayerPosition);
@@ -89,12 +92,12 @@ const App = () => {
     const updateLoop = setInterval(() => {
       updatePosition();
       applyFriction();
-    }, 1000 / 60); // 60 fps
+    }, updateRate);
 
     return () => {
       clearInterval(updateLoop);
     };
-  }, [acceleration, friction, maxSpeed, playerPosition, velocity]);
+  }, [acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight]);
 
   return (
     <div
@@ -103,7 +106,8 @@ const App = () => {
       onKeyDown={() => {}}
       onKeyUp={() => {}}
     >
-      <Player position={playerPosition} />
+      <Player position={playerPosition} width={playerWidth} height={playerWidth} />
+
     </div>
   );
 };
