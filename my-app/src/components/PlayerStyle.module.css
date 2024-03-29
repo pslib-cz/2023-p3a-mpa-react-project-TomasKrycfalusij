@@ -10,7 +10,6 @@
 }
 
 .player {
-
     position: absolute;
     top: -6%;
     left: 0;
@@ -34,7 +33,6 @@
     background-size: 100%;
 }
 
-
 .boosterFire {
     position: absolute;
     top: 14%;
@@ -42,9 +40,18 @@
     height: 100%;
     width: 100%;
     background-repeat: no-repeat;
+}
+
+.boosterFireDefault {
     background-size: 300%;
     background-position: 0% 0;
     animation: animateBoostersDefault 0.3s steps(1) infinite;
+}
+
+.boosterFireBoost {
+    background-size: 400%;
+    background-position: 0% 0;
+    animation: animateBoostersBoost 0.3s steps(1) infinite;
 }
 
 /* 300% bg-size */

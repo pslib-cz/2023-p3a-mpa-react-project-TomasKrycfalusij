@@ -6,9 +6,10 @@ interface PlayerProps {
   width: number;
   height: number;
   rotation: number;
+  moving: boolean;
 }
 
-const Player: React.FC<PlayerProps> = ({ position, width, height, rotation }) => {
+const Player: React.FC<PlayerProps> = ({ position, width, height, rotation, moving }) => {
   // Adjust rotation to match default orientation
 
   const playerPositioner = {
@@ -22,7 +23,7 @@ const Player: React.FC<PlayerProps> = ({ position, width, height, rotation }) =>
   return (
     <div style={playerPositioner} className={PlayerStyle.playerPositioner}>
       <div className={PlayerStyle.playerContainer}>
-        <div className={PlayerStyle.boosterFire}></div>
+        <div className={`${PlayerStyle.boosterFire} ${moving ? PlayerStyle.boosterFireBoost : PlayerStyle.boosterFireDefault}`}></div>
         <div className={PlayerStyle.boosters}></div>
         <div className={PlayerStyle.player}></div>
       </div>

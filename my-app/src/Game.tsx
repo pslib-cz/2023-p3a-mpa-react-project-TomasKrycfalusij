@@ -15,15 +15,16 @@ interface MissileType {
     velocityX: number;
     velocityY: number;
     remove: boolean;
+    rotation: number;
   }
   
 
 const Game: React.FC = () => {
-    const [playerPosition, setPlayerPosition] = useState<Coordinates>({ x: 0, y: 0 });
+    const [playerPosition, setPlayerPosition] = useState<Coordinates>({ x: 100, y: 100 });
     const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
     const [playerRotation, setPlayerRotation] = useState<number>(0);
     const [missiles, setMissiles] = useState<MissileType[]>([]);
-    const [missileSpeed, setMissileSpeed] = useState<number>(3);
+    const [missileSpeed, setMissileSpeed] = useState<number>(.5);
     const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
     const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
     const [maxSpeed, setMaxSpeed] = useState<number>(2);
@@ -33,11 +34,15 @@ const Game: React.FC = () => {
     const [playerHeight, setPlayerHeight] = useState<number>(60);
     const [bgX, setBgX] = useState<number>(0);
     const [bgY, setBgY] = useState<number>(0);
+    const [isMoving, setIsMoving] = useState(false);
     const updateRate: number = 1000 / 200;
 
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key.startsWith('Arrow')) {
+        setIsMoving(true);
+      }
       switch (e.key) {
         case 'ArrowUp':
           setAcceleration((prevAcceleration) => ({ ...prevAcceleration, y: -accelerationRate }));
@@ -57,6 +62,9 @@ const Game: React.FC = () => {
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key.startsWith('Arrow')) {
+        setIsMoving(false);
+      }
       switch (e.key) {
         case 'ArrowUp':
         case 'ArrowDown':
@@ -168,6 +176,7 @@ const Game: React.FC = () => {
           velocityX: normalizedDx * missileSpeed,
           velocityY: normalizedDy * missileSpeed,
           remove: false,
+          rotation: playerRotation
         };
       
         setMissiles((prevMissiles) => [...prevMissiles, newMissile]);
@@ -218,9 +227,10 @@ const Game: React.FC = () => {
 
   return (
     <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
-      <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} />
+      <Missile key={uuidv4()} id={50} position={{x: 100, y: 100}} rotation={10}/>
+      <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
       {missiles.map((missile) => (
-        <Missile key={uuidv4()} id={missile.id} position={missile.position}/>
+        <Missile key={uuidv4()} id={missile.id} position={missile.position} rotation={missile.rotation}/>
       ))}
     </div>
   );
