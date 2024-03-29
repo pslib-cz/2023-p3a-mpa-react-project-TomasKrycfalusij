@@ -16,6 +16,7 @@ interface MissileType {
     velocityY: number;
     remove: boolean;
     rotation: number;
+    key: string;
   }
   
 
@@ -24,7 +25,7 @@ const Game: React.FC = () => {
     const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
     const [playerRotation, setPlayerRotation] = useState<number>(0);
     const [missiles, setMissiles] = useState<MissileType[]>([]);
-    const [missileSpeed, setMissileSpeed] = useState<number>(.5);
+    const [missileSpeed, setMissileSpeed] = useState<number>(3);
     const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
     const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
     const [maxSpeed, setMaxSpeed] = useState<number>(2);
@@ -163,24 +164,25 @@ const Game: React.FC = () => {
         const dx = e.clientX - (playerPosition.x + playerWidth / 2);
         const dy = e.clientY - (playerPosition.y + playerHeight / 2);
         const distance = Math.sqrt(dx * dx + dy * dy);
-      
+    
         const normalizedDx = dx / distance;
         const normalizedDy = dy / distance;
-      
+    
         const spawnX = playerPosition.x + playerWidth / 2 + normalizedDx * (playerWidth / 2);
         const spawnY = playerPosition.y + playerHeight / 2 + normalizedDy * (playerHeight / 2);
-      
+    
         const newMissile: MissileType = {
-          id: missiles.length + 1,
-          position: { x: spawnX, y: spawnY },
-          velocityX: normalizedDx * missileSpeed,
-          velocityY: normalizedDy * missileSpeed,
-          remove: false,
-          rotation: playerRotation
+            id: missiles.length + 1,
+            position: { x: spawnX, y: spawnY },
+            velocityX: normalizedDx * missileSpeed,
+            velocityY: normalizedDy * missileSpeed,
+            remove: false,
+            rotation: playerRotation,
+            key: uuidv4()
         };
-      
+    
         setMissiles((prevMissiles) => [...prevMissiles, newMissile]);
-      };
+    };
       
 
     const updateLoop = setInterval(() => {
@@ -226,13 +228,12 @@ const Game: React.FC = () => {
   }, [playerPosition]);
 
   return (
-    <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
-      <Missile key={uuidv4()} id={50} position={{x: 100, y: 100}} rotation={10}/>
+  <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
       <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
       {missiles.map((missile) => (
-        <Missile key={uuidv4()} id={missile.id} position={missile.position} rotation={missile.rotation}/>
+          <Missile key={missile.key} id={missile.id} position={missile.position} rotation={missile.rotation}/>
       ))}
-    </div>
+  </div>
   );
 };
 
