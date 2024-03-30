@@ -5,6 +5,7 @@ import Missile from './components/Missile';
 import { v4 as uuidv4 } from 'uuid';
 import { Context } from './components/ContextProvider'; // Assuming your context file is named Context.js or Context.tsx
 import { ActionType } from './components/Reducer'; // Assuming you exported ActionType enum from your reducer file
+import Enemy from './components/Enemy';
 
 interface Coordinates {
   x: number;
@@ -24,9 +25,11 @@ interface MissileType {
 
 interface EnemyType {
   id: string;
+  type: number;
   position: Coordinates;
   velocityX: number;
   velocityY: number;
+  rotation: number;
   health: number;
 }
 
@@ -61,6 +64,10 @@ const Game: React.FC = () => {
   const [enemySpeed, setEnemySpeed] = useState<number>(0.5);
   const enemySpawnInterval = 3000;
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
+
+  // ----- OTHER ----- //
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
 
 
   // ----- HANDLING KEYBOARD ACTIONS ----- //
@@ -227,36 +234,56 @@ const Game: React.FC = () => {
 
 
 
-    // ----- MOVING ENEMIES ----- //
-    const moveEnemies = () => {
-      setEnemies((prevEnemies) =>
-        prevEnemies.map((enemy) => {
-          const playerCenterX = playerPosition.x + playerWidth / 2;
-          const playerCenterY = playerPosition.y + playerHeight / 2;
-          
-          const dx = playerCenterX - enemy.position.x;
-          const dy = playerCenterY - enemy.position.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          const speed = enemySpeed;
-          const velocityX = (dx / distance) * speed;
-          const velocityY = (dy / distance) * speed;
+// ----- MOVING ENEMIES ----- //
+const moveEnemies = () => {
+  setEnemies((prevEnemies) =>
+    prevEnemies.map((enemy) => {
+      const playerCenterX = playerPosition.x + playerWidth / 2;
+      const playerCenterY = playerPosition.y + playerHeight / 2;
+      const dx = playerCenterX - enemy.position.x;
+      const dy = playerCenterY - enemy.position.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
 
-          return {
-            ...enemy,
-            position: {
-              x: enemy.position.x + velocityX,
-              y: enemy.position.y + velocityY,
-            },
-            velocityX,
-            velocityY,
-          };
-        })
-      );
-    };
-    // ----- MOVING ENEMIES ----- //
+      let velocityX, velocityY;
 
-    
+      if (enemy.type === 1) {
+        if (distance > screenWidth * 0.3) {
+          velocityX = (dx / distance) * enemySpeed;
+          velocityY = (dy / distance) * enemySpeed;
+        } else if (distance > screenWidth * 0.2) {
+          const slowdownFactor = ((distance - screenWidth * 0.2) / (screenWidth * 0.1)) + 0.3;
+          velocityX = (dx / distance) * enemySpeed * slowdownFactor;
+          velocityY = (dy / distance) * enemySpeed * slowdownFactor;
+        } else {
+          const radius = screenWidth * 0.1;
+          const angle = Math.atan2(dy, dx);
+          const circularVelocity = enemySpeed * 0.5;
+          velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
+          velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+        }
+      } else {
+        velocityX = 0;
+        velocityY = 0;
+      }
+
+      const rotation = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
+
+      return {
+        ...enemy,
+        position: {
+          x: enemy.position.x + velocityX,
+          y: enemy.position.y + velocityY,
+        },
+        velocityX,
+        velocityY,
+        rotation,
+      };
+    })
+  );
+};
+// ----- MOVING ENEMIES ----- //
+
+
 
 
 // ----- CHECKING COLLISIONS ----- //
@@ -264,36 +291,34 @@ const checkMissileEnemyCollisions = () => {
   setEnemies((prevEnemies) =>
     prevEnemies.map((enemy) => {
       let updatedEnemy = { ...enemy };
-      let collisionDetected = false; // Flag to track if collision with enemy is detected
+      let collisionDetected = false;
       missiles.forEach((missile, index) => {
-        if (!collisionDetected && missile.collisions > 0) { // Check if missile has collisions left
+        if (!collisionDetected && missile.collisions > 0) {
           const dx = enemy.position.x - missile.position.x;
           const dy = enemy.position.y - missile.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const collision = distance < 25; // Adjust the collision radius as needed
+          const collision = distance < 25;
           if (collision) {
             collisionDetected = true;
-            // Decrement missile collisions and check if it's greater than 0
             const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
             setMissiles((prevMissiles) => {
               const updatedMissiles = [...prevMissiles];
               updatedMissiles[index] = updatedMissile;
-              return updatedMissiles.filter((_, idx) => idx !== index); // Remove the missile if collision count reaches 0
+              return updatedMissiles.filter((_, idx) => idx !== index);
             });
             if (updatedEnemy.health > 0) {
-              // Reduce enemy health only if it's greater than 0
               updatedEnemy.health -= 1;
 
               if (updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
-                setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true))); // Mark enemy as killed
-                dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 }); // Add money if enemy is killed for the first time
+                setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
+                dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 });
               }
             }
           }
         }
       });
       return updatedEnemy;
-    }).filter((enemy) => enemy.health > 0) // Filter out enemies with health <= 0
+    }).filter((enemy) => enemy.health > 0)
   );
 };
 // ----- CHECKING COLLISIONS ----- //
@@ -363,9 +388,11 @@ const checkMissileEnemyCollisions = () => {
 
       const newEnemy: EnemyType = {
         id: uuidv4(),
+        type: 1,
         position: { x: randomX, y: randomY },
         velocityX: 0,
         velocityY: 0,
+        rotation: 0,
         health: 2
       };
 
@@ -391,7 +418,7 @@ const checkMissileEnemyCollisions = () => {
           <Missile key={missile.key} id={missile.id} position={missile.position} rotation={missile.rotation}/>
       ))}
       {enemies.map((enemy) => (
-        <div key={enemy.id} className={gameStyle.enemy} style={{ position: "absolute", transform: `translate(-50%, -50%)`, left: enemy.position.x, top: enemy.position.y, width: "50px", height: "50px", backgroundColor: "yellow" }} />
+        <Enemy key={enemy.id} id={enemy.id} position={enemy.position} rotation={enemy.rotation} />
       ))}
   </div>
   );
