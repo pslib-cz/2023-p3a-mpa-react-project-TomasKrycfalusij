@@ -30,6 +30,7 @@ interface EnemyType {
   velocityX: number;
   velocityY: number;
   rotation: number;
+  maxHealth: number;
   health: number;
 }
 
@@ -393,7 +394,8 @@ const checkMissileEnemyCollisions = () => {
         velocityX: 0,
         velocityY: 0,
         rotation: 0,
-        health: 2
+        maxHealth: 5,
+        health: 5
       };
 
       setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
@@ -418,7 +420,7 @@ const checkMissileEnemyCollisions = () => {
           <Missile key={missile.key} id={missile.id} position={missile.position} rotation={missile.rotation}/>
       ))}
       {enemies.map((enemy) => (
-        <Enemy key={enemy.id} id={enemy.id} position={enemy.position} rotation={enemy.rotation} />
+        <Enemy key={enemy.id} id={enemy.id} position={enemy.position} rotation={enemy.rotation} maxHealth={enemy.maxHealth} health={enemy.health} />
       ))}
   </div>
   );
