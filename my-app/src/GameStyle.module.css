@@ -6,4 +6,15 @@
     background-repeat: repeat;
     background-position: 0px 0px;
     background-size: 50%;
+    user-select: none;
+}
+
+.stats {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    user-select: none;
+}
+.statsValue {
+    color: white;
 }
