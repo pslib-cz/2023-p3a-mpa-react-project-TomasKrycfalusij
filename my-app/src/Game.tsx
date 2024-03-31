@@ -4,35 +4,13 @@ import gameStyle from './GameStyle.module.css';
 import Missile from './components/Missile';
 import { v4 as uuidv4 } from 'uuid';
 import { Context } from './components/ContextProvider'; // Assuming your context file is named Context.js or Context.tsx
-import { ActionType } from './components/Reducer'; // Assuming you exported ActionType enum from your reducer file
+import { ActionType } from './types/ReducerTypes'; // Assuming you exported ActionType enum from your reducer file
 import Enemy from './components/Enemy';
 
-interface Coordinates {
-  x: number;
-  y: number;
-}
+import { EnemyType, enemiesSelector } from './types/EnemyTypes';
+import { Coordinates } from './types/BasicTypes';
+import { MissileType, missilesSelector } from './types/MissileTypes';
 
-interface MissileType {
-    id: number;
-    position: Coordinates;
-    velocityX: number;
-    velocityY: number;
-    remove: boolean;
-    rotation: number;
-    collisions: number;
-    key: string;
-  }
-
-interface EnemyType {
-  id: string;
-  type: number;
-  position: Coordinates;
-  velocityX: number;
-  velocityY: number;
-  rotation: number;
-  maxHealth: number;
-  health: number;
-}
 
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
@@ -219,18 +197,17 @@ const Game: React.FC = () => {
       const spawnY = playerPosition.y + playerHeight / 2 + normalizedDy * (playerHeight / 2);
   
       const newMissile: MissileType = {
+          ...missilesSelector[0], // Use default values from missilesSelector[0]
           id: missiles.length + 1,
           position: { x: spawnX, y: spawnY },
           velocityX: normalizedDx * missileSpeed,
           velocityY: normalizedDy * missileSpeed,
-          remove: false,
           rotation: playerRotation,
-          collisions: 1,
           key: uuidv4()
       };
   
       setMissiles((prevMissiles) => [...prevMissiles, newMissile]);
-    };
+  };
     // ----- SPAWNING MISSILES ----- //
 
 
@@ -308,11 +285,12 @@ const checkMissileEnemyCollisions = () => {
               return updatedMissiles.filter((_, idx) => idx !== index);
             });
             if (updatedEnemy.health > 0) {
-              updatedEnemy.health -= 1;
+              // Calculate damage based on missile's properties and enemy's speed
+              updatedEnemy.health -= missile.damage;
 
               if (updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
                 setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
-                dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 });
+                dispatch({ type: ActionType.UPDATE_MONEY, payload: enemy.reward });
               }
             }
           }
@@ -323,6 +301,7 @@ const checkMissileEnemyCollisions = () => {
   );
 };
 // ----- CHECKING COLLISIONS ----- //
+
 
 
     
@@ -381,31 +360,26 @@ const checkMissileEnemyCollisions = () => {
 
 
 
-  // ----- SPAWNING ENEMIES ----- //
-  useEffect(() => {
-    const spawnEnemy = () => {
-      const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
-      const randomY = Math.random() * window.innerHeight;
+// ----- SPAWNING ENEMIES ----- //
+useEffect(() => {
+  const spawnEnemy = () => {
+    const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
+    const randomY = Math.random() * window.innerHeight;
 
-      const newEnemy: EnemyType = {
-        id: uuidv4(),
-        type: 1,
-        position: { x: randomX, y: randomY },
-        velocityX: 0,
-        velocityY: 0,
-        rotation: 0,
-        maxHealth: 5,
-        health: 5
-      };
-
-      setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
+    const newEnemy: EnemyType = {
+      ...enemiesSelector[0],
+      id: uuidv4(),
+      position: { x: randomX, y: randomY }, // Update position with random values
     };
 
-    const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
+    setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
+  };
 
-    return () => clearInterval(enemySpawnTimer);
-  }, [enemySpawnInterval]);
-  // ----- SPAWNING ENEMIES ----- //
+  const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
+
+  return () => clearInterval(enemySpawnTimer);
+}, [enemySpawnInterval]);
+// ----- SPAWNING ENEMIES ----- //
 
 
   return (
