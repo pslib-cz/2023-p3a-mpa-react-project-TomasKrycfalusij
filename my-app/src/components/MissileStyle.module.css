@@ -1,8 +1,17 @@
-.missilePositioner {
+.missile1Positioner {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+}
+
+
+.missile2Positioner {
     position: absolute;
     width: 20px;
     height: 40px;
 }
+
+/* ------------------- */
 
 .missileContainer {
     width: 100%;
@@ -20,13 +29,20 @@
     background-repeat: no-repeat;
 }
 
-.missileAnimation {
-    background-size: 1000%;
-    background-position: 12.5% 70%;
-    animation: animateMissile 0.3s steps(1) infinite;
+/* ------------------- */
+
+.missile1Animation {
+    background-color: yellow;
 }
 
-@keyframes animateMissile {
+
+.missile2Animation {
+    background-size: 1000%;
+    background-position: 12.5% 70%;
+    animation: animateMissile2 0.3s steps(1) infinite;
+}
+
+@keyframes animateMissile2 {
     0% {
         background-image: url("../assets/missiles/Main ship weapon - Projectile - Rocket.png");
         background-position: 13% 70%;

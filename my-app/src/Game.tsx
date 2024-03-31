@@ -12,6 +12,37 @@ import { Coordinates } from './types/BasicTypes';
 import { MissileType, missilesSelector } from './types/MissileTypes';
 
 
+
+export const spawnMissile = (
+  normalizedDx: number,
+  normalizedDy: number,
+  objectPosition: Coordinates,
+  objectRotation: number,
+  missileType: number,
+  fromEnemy: boolean,
+  setMissiles: React.Dispatch<React.SetStateAction<MissileType[]>>,
+  uuidv4: () => string
+) => {
+  const selectedMissile = missilesSelector.find(missile => missile.type === missileType) || missilesSelector[0];
+
+  const newMissile: MissileType = {
+    ...selectedMissile,
+    id: 1,
+    isEnemy: fromEnemy,
+    position: { x: objectPosition.x, y: objectPosition.y },
+    velocityX: normalizedDx * selectedMissile.speed,
+    velocityY: normalizedDy * selectedMissile.speed,
+    rotation: objectRotation,
+    key: uuidv4()
+  };
+
+  setMissiles(prevMissiles => [...prevMissiles, newMissile]);
+};
+
+
+
+
+
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
   // ----- PLAYER ----- //
@@ -26,11 +57,10 @@ const Game: React.FC = () => {
   const [playerHeight, setPlayerHeight] = useState<number>(60);
   const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
   const [isMoving, setIsMoving] = useState(false);
-
+  // const [player, setPlayer] = useState<playrType[]>([{type: play}])
 
   // ----- MISSILES ----- //
-  const [missiles, setMissiles] = useState<MissileType[]>([]);
-  const [missileSpeed, setMissileSpeed] = useState<number>(3);
+  const [missiles, setMissiles] = useState<MissileType[]>([])
   
   // ----- BACKGROUND ----- //
   const [bgX, setBgX] = useState<number>(0);
@@ -184,123 +214,135 @@ const Game: React.FC = () => {
     
 
 
-    // ----- SPAWNING MISSILES ----- //
+    // ----- SPAWNING PLAYER MISSILES ----- //
     const mouseClick = (e: MouseEvent) => {
       const dx = e.clientX - (playerPosition.x + playerWidth / 2);
       const dy = e.clientY - (playerPosition.y + playerHeight / 2);
       const distance = Math.sqrt(dx * dx + dy * dy);
-  
       const normalizedDx = dx / distance;
       const normalizedDy = dy / distance;
-  
-      const spawnX = playerPosition.x + playerWidth / 2 + normalizedDx * (playerWidth / 2);
-      const spawnY = playerPosition.y + playerHeight / 2 + normalizedDy * (playerHeight / 2);
-  
-      const newMissile: MissileType = {
-          ...missilesSelector[0], // Use default values from missilesSelector[0]
-          id: missiles.length + 1,
-          position: { x: spawnX, y: spawnY },
-          velocityX: normalizedDx * missileSpeed,
-          velocityY: normalizedDy * missileSpeed,
-          rotation: playerRotation,
-          key: uuidv4()
-      };
-  
-      setMissiles((prevMissiles) => [...prevMissiles, newMissile]);
-  };
-    // ----- SPAWNING MISSILES ----- //
+    
+      spawnMissile(
+        normalizedDx,
+        normalizedDy,
+        {x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2},
+        playerRotation,
+        2, // Example missile type, replace with desired value
+        false,
+        setMissiles,
+        uuidv4
+      );
+    };
+
+    // ----- SPAWNING PLAYER MISSILES ----- //
 
 
 
-// ----- MOVING ENEMIES ----- //
-const moveEnemies = () => {
-  setEnemies((prevEnemies) =>
-    prevEnemies.map((enemy) => {
-      const playerCenterX = playerPosition.x + playerWidth / 2;
-      const playerCenterY = playerPosition.y + playerHeight / 2;
-      const dx = playerCenterX - enemy.position.x;
-      const dy = playerCenterY - enemy.position.y;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      let velocityX, velocityY;
-
-      if (enemy.type === 1) {
-        if (distance > screenWidth * 0.3) {
-          velocityX = (dx / distance) * enemySpeed;
-          velocityY = (dy / distance) * enemySpeed;
-        } else if (distance > screenWidth * 0.2) {
-          const slowdownFactor = ((distance - screenWidth * 0.2) / (screenWidth * 0.1)) + 0.3;
-          velocityX = (dx / distance) * enemySpeed * slowdownFactor;
-          velocityY = (dy / distance) * enemySpeed * slowdownFactor;
-        } else {
-          const radius = screenWidth * 0.1;
-          const angle = Math.atan2(dy, dx);
-          const circularVelocity = enemySpeed * 0.5;
-          velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
-          velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
-        }
-      } else {
-        velocityX = 0;
-        velocityY = 0;
-      }
-
-      const rotation = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
-
-      return {
-        ...enemy,
-        position: {
-          x: enemy.position.x + velocityX,
-          y: enemy.position.y + velocityY,
-        },
-        velocityX,
-        velocityY,
-        rotation,
-      };
-    })
-  );
-};
-// ----- MOVING ENEMIES ----- //
-
-
-
-
-// ----- CHECKING COLLISIONS ----- //
-const checkMissileEnemyCollisions = () => {
-  setEnemies((prevEnemies) =>
-    prevEnemies.map((enemy) => {
-      let updatedEnemy = { ...enemy };
-      let collisionDetected = false;
-      missiles.forEach((missile, index) => {
-        if (!collisionDetected && missile.collisions > 0) {
-          const dx = enemy.position.x - missile.position.x;
-          const dy = enemy.position.y - missile.position.y;
+    // ----- MOVING ENEMIES ----- //
+    const moveEnemies = () => {
+      setEnemies((prevEnemies) =>
+        prevEnemies.map((enemy) => {
+          const playerCenterX = playerPosition.x + playerWidth / 2;
+          const playerCenterY = playerPosition.y + playerHeight / 2;
+          const dx = playerCenterX - enemy.position.x;
+          const dy = playerCenterY - enemy.position.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
-          const collision = distance < 25;
-          if (collision) {
-            collisionDetected = true;
-            const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
-            setMissiles((prevMissiles) => {
-              const updatedMissiles = [...prevMissiles];
-              updatedMissiles[index] = updatedMissile;
-              return updatedMissiles.filter((_, idx) => idx !== index);
-            });
-            if (updatedEnemy.health > 0) {
-              // Calculate damage based on missile's properties and enemy's speed
-              updatedEnemy.health -= missile.damage;
 
-              if (updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
-                setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
-                dispatch({ type: ActionType.UPDATE_MONEY, payload: enemy.reward });
+          let velocityX, velocityY;
+
+          if (enemy.type === 1) {
+            if (distance > screenWidth * 0.3) {
+              velocityX = (dx / distance) * enemySpeed;
+              velocityY = (dy / distance) * enemySpeed;
+            } else if (distance > screenWidth * 0.2) {
+              const slowdownFactor = ((distance - screenWidth * 0.2) / (screenWidth * 0.1)) + 0.3;
+              velocityX = (dx / distance) * enemySpeed * slowdownFactor;
+              velocityY = (dy / distance) * enemySpeed * slowdownFactor;
+            } else {
+              const radius = screenWidth * 0.1;
+              const angle = Math.atan2(dy, dx);
+              const circularVelocity = enemySpeed * 0.5;
+              velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
+              velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+            }
+          } else {
+            velocityX = 0;
+            velocityY = 0;
+          }
+
+          const rotation = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
+
+          return {
+            ...enemy,
+            position: {
+              x: enemy.position.x + velocityX,
+              y: enemy.position.y + velocityY,
+            },
+            velocityX,
+            velocityY,
+            rotation,
+          };
+        })
+      );
+    };
+    // ----- MOVING ENEMIES ----- //
+
+
+    // ----- CHECKING COLLISIONS ----- //
+    const checkMissileCollisions = () => {
+      setEnemies((prevEnemies) =>
+      prevEnemies.map((enemy) => {
+        let updatedEnemy = { ...enemy };
+        let collisionDetected = false;
+        missiles.forEach((missile, index) => {
+          if (!collisionDetected && missile.collisions > 0) {
+            const dxEnemy = enemy.position.x - missile.position.x;
+            const dyEnemy = enemy.position.y - missile.position.y;
+            const distanceEnemy = Math.sqrt(dxEnemy * dxEnemy + dyEnemy * dyEnemy);
+            const collisionEnemy = distanceEnemy < 25;
+
+            if (collisionEnemy && !missile.isEnemy) {
+              collisionDetected = true;
+              const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
+              setMissiles((prevMissiles) => {
+                const updatedMissiles = [...prevMissiles];
+                updatedMissiles[index] = updatedMissile;
+                return updatedMissiles.filter((_, idx) => idx !== index);
+              });
+              if (updatedEnemy.health > 0) {
+                // Calculate damage based on missile's properties and enemy's speed
+                updatedEnemy.health -= missile.damage;
+
+                if (updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
+                  setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
+                  dispatch({ type: ActionType.UPDATE_MONEY, payload: enemy.reward });
+                }
               }
             }
           }
+        });
+        return updatedEnemy;
+      }).filter((enemy) => enemy.health > 0)
+      );
+      missiles.map((missile, index) => {
+        const dxPlayer = playerPosition.x - missile.position.x + (playerWidth / 2);
+        const dyPlayer = playerPosition.y - missile.position.y + (playerHeight / 2);
+        const distancePlayer = Math.sqrt(dxPlayer * dxPlayer + dyPlayer * dyPlayer);
+        const collisionPlayer = distancePlayer < (playerWidth / 2);
+
+        if (collisionPlayer && missile.isEnemy) {
+          dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: missile.damage });
+          const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
+          setMissiles((prevMissiles) => {
+            const updatedMissiles = [...prevMissiles];
+            updatedMissiles[index] = updatedMissile;
+            return updatedMissiles.filter((_, idx) => idx !== index);
+          });
         }
-      });
-      return updatedEnemy;
-    }).filter((enemy) => enemy.health > 0)
-  );
-};
-// ----- CHECKING COLLISIONS ----- //
+      })
+    };
+    // ----- CHECKING COLLISIONS ----- //
+
 
 
 
@@ -311,7 +353,7 @@ const checkMissileEnemyCollisions = () => {
       applyFriction();
       updateMissilePositions();
       moveEnemies();
-      checkMissileEnemyCollisions();
+      checkMissileCollisions();
     }, updateRate);
 
     document.addEventListener('click', mouseClick);
@@ -360,26 +402,26 @@ const checkMissileEnemyCollisions = () => {
 
 
 
-// ----- SPAWNING ENEMIES ----- //
-useEffect(() => {
-  const spawnEnemy = () => {
-    const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
-    const randomY = Math.random() * window.innerHeight;
+  // ----- SPAWNING ENEMIES ----- //
+  useEffect(() => {
+    const spawnEnemy = () => {
+      const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
+      const randomY = Math.random() * window.innerHeight;
 
-    const newEnemy: EnemyType = {
-      ...enemiesSelector[0],
-      id: uuidv4(),
-      position: { x: randomX, y: randomY }, // Update position with random values
+      const newEnemy: EnemyType = {
+        ...enemiesSelector[0],
+        id: uuidv4(),
+        position: { x: randomX, y: randomY }, // Update position with random values
+      };
+
+      setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
     };
 
-    setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
-  };
+    const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
 
-  const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
-
-  return () => clearInterval(enemySpawnTimer);
-}, [enemySpawnInterval]);
-// ----- SPAWNING ENEMIES ----- //
+    return () => clearInterval(enemySpawnTimer);
+  }, [enemySpawnInterval]);
+  // ----- SPAWNING ENEMIES ----- //
 
 
   return (
@@ -387,15 +429,25 @@ useEffect(() => {
       <div className={gameStyle.stats}>
         <p className={gameStyle.statsValue}>Money: {playerStats.money}</p>
         <p className={gameStyle.statsValue}>Level: {playerStats.level}</p>
+        <p className={gameStyle.statsValue}>Health: {playerStats.health}</p>
       </div>
       <button onClick={() => dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 })}>Add Money</button>
       <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
       {missiles.map((missile) => (
-          <Missile key={missile.key} id={missile.id} position={missile.position} rotation={missile.rotation}/>
+          <Missile key={missile.key} id={missile.id} type={missile.type} position={missile.position} rotation={missile.rotation}/>
       ))}
-      {enemies.map((enemy) => (
-        <Enemy key={enemy.id} id={enemy.id} position={enemy.position} rotation={enemy.rotation} maxHealth={enemy.maxHealth} health={enemy.health} />
-      ))}
+    {enemies.map((enemy) => (
+      <Enemy
+        key={enemy.id}
+        id={enemy.id}
+        position={enemy.position}
+        rotation={enemy.rotation}
+        maxHealth={enemy.maxHealth}
+        health={enemy.health}
+        setMissiles={setMissiles}
+        uuidv4={uuidv4}
+      />
+    ))}
   </div>
   );
 };

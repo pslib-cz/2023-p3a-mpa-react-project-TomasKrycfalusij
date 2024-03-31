@@ -1,7 +1,7 @@
 import React, { createContext, Dispatch, PropsWithChildren, useReducer } from 'react';
 import reducer, { initialState } from './Reducer';
 
-import { Action } from './Reducer'; // Import the 'Action' type from the appropriate package
+import { Action } from '../types/ReducerTypes'; // Import the 'Action' type from the appropriate package
 
 interface Upgrade {
     name: string;
@@ -14,6 +14,7 @@ interface PlayerInfo {
     playerStats: {
         money: number;
         level: number;
+        health: number;
         upgrades: Upgrade[];
     };
     dispatch: Dispatch<Action>;
