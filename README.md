@@ -26,7 +26,7 @@ Hráč si bude mít v herním obchodě možnost si zakoupit tyto vylepšení:
 - Celkové životy hráče
 - Jiné perky
 
-## Gamleplay
+## Gameplay
 
 Ovládaní bude jednoduché
 Na počítači: WSAD / šipky + myš
