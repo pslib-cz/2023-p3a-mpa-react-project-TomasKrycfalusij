@@ -1,8 +1,36 @@
-# Space invaders remake
+# PROTECT THE SUN
 
 ## Téma
 
-Bude se jednat o 2D hru kdy hráčovi bude přidělena kosmická loď a nepřátelé na něj budou útočit. Svou loď si bude moci vylepšovat a postupovat v progresu hry. Data se budou ukládat po zakoupení určitého itemu anebo po dokončení levelu.
+Bude se jednat o 2D hru kdy hráčovi bude přidělena kosmická loď a nepřátelé na něj budou útočit. Svou loď si bude moci vylepšovat a postupovat v progresu hry. Data se budou ukládat po zakoupení určitého itemu anebo po dokončení levelu. Hlavní myšlenka hry je příchod nepřátel s cílem zabrat naší Sluneční soustavu.
+
+Hráč se může volně pohybovat po herní ploše a nepřátelé budou přicházet z různých stran.
+
+Ve hře bude celkem 10 levelů seřazené podle obtížnosti. Každým splněným level se otevře možnost jít do dalšího. Také zde bude potenciální nekonečný level kdy cílem bude získat co nejvíce skóre před smrtí.
+
+## Herní měna
+
+Ve hře bude hráč schopen získat herní měnu plněním levelů a zebíjením nepřátelských lodí. Odměna bude ohodnocena podle druhu enemy.
+
+## Nepřátelé
+
+Nepřátelé se budou spawnovat z různých směrů herní plochy a tím to přispěje určitou míru náhodnosti.
+
+## Vylepšení
+
+Hráč si bude mít v herním obchodě možnost si zakoupit tyto vylepšení:
+- Rychlost střílení (reload)
+- Rychlost kosmické lodě
+- Druh zbraně
+- Damage zbraně
+- Celkové životy hráče
+- Jiné perky
+
+## Gamleplay
+
+Ovládaní bude jednoduché
+Na počítači: WSAD / šipky + myš
+Na telefonu: Joystick
 
 ## Odkazy pro vývoj
 
