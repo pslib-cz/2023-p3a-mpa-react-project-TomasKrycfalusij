@@ -343,9 +343,6 @@ const Game: React.FC = () => {
     };
     // ----- CHECKING COLLISIONS ----- //
 
-
-
-
     
 
     const updateLoop = setInterval(() => {

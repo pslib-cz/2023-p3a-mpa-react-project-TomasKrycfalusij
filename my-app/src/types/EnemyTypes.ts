@@ -19,7 +19,7 @@ export interface EnemyType {
 
 export const enemiesSelector: EnemyType[] = [
   {
-    id: "enemy1", // Unique ID for the enemy
+    id: "enemy1",
     type: 1,
     position: { x: 0, y: 0 },
     velocityX: 0,
