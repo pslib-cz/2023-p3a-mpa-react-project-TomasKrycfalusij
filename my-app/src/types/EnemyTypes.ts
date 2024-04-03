@@ -15,6 +15,7 @@ export interface EnemyType {
   missileFrequency: number;
   name: string;
   description: string;
+  texture: string;
 }
 
 export const enemiesSelector: EnemyType[] = [
@@ -25,13 +26,31 @@ export const enemiesSelector: EnemyType[] = [
     velocityX: 0,
     velocityY: 0,
     rotation: 0,
-    maxHealth: 5,
-    health: 5,
-    speed: 5,
+    maxHealth: 3,
+    health: 3,
+    speed: 0.5,
     reward: 10,
     missileType: 1,
-    missileFrequency: 5,
+    missileFrequency: 3500,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran."
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
+    texture: "/src/assets/enemies/Nairan - Torpedo Ship - Base.png"
+  },
+  {
+    id: "enemy2",
+    type: 2,
+    position: { x: 0, y: 0 },
+    velocityX: 0,
+    velocityY: 0,
+    rotation: 0,
+    maxHealth: 1,
+    health: 1,
+    speed: 2,
+    reward: 10,
+    missileType: 1,
+    missileFrequency: 3500,
+    name: "Střelec",
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
+    texture: "/src/assets/enemies/Nairan - Scout - Base.png"
   }
 ];

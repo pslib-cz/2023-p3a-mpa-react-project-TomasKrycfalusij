@@ -70,7 +70,6 @@ const Game: React.FC = () => {
 
   // ----- ENEMIES ----- //
   const [enemies, setEnemies] = useState<EnemyType[]>([]);
-  const [enemySpeed, setEnemySpeed] = useState<number>(0.5);
   const enemySpawnInterval = 3000;
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
 
@@ -120,7 +119,6 @@ const Game: React.FC = () => {
           break;
       }
     };
-
 
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
@@ -252,19 +250,23 @@ const Game: React.FC = () => {
 
           if (enemy.type === 1) {
             if (distance > screenWidth * 0.3) {
-              velocityX = (dx / distance) * enemySpeed;
-              velocityY = (dy / distance) * enemySpeed;
+              velocityX = (dx / distance) * enemy.speed;
+              velocityY = (dy / distance) * enemy.speed;
             } else if (distance > screenWidth * 0.2) {
               const slowdownFactor = ((distance - screenWidth * 0.2) / (screenWidth * 0.1)) + 0.3;
-              velocityX = (dx / distance) * enemySpeed * slowdownFactor;
-              velocityY = (dy / distance) * enemySpeed * slowdownFactor;
+              velocityX = (dx / distance) * enemy.speed * slowdownFactor;
+              velocityY = (dy / distance) * enemy.speed * slowdownFactor;
             } else {
               const radius = screenWidth * 0.1;
               const angle = Math.atan2(dy, dx);
-              const circularVelocity = enemySpeed * 0.5;
+              const circularVelocity = enemy.speed * 0.5;
               velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
               velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
             }
+          }
+          else if (enemy.type === 2) {
+            velocityX = (dx / distance) * enemy.speed;
+            velocityY = (dy / distance) * enemy.speed;
           } else {
             velocityX = 0;
             velocityY = 0;
@@ -406,7 +408,7 @@ const Game: React.FC = () => {
       const randomY = Math.random() * window.innerHeight;
 
       const newEnemy: EnemyType = {
-        ...enemiesSelector[0],
+        ...enemiesSelector[1],
         id: uuidv4(),
         position: { x: randomX, y: randomY }, // Update position with random values
       };
@@ -429,10 +431,10 @@ const Game: React.FC = () => {
         <p className={gameStyle.statsValue}>Health: {playerStats.health}</p>
       </div>
       <button onClick={() => dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 })}>Add Money</button>
-      <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
       {missiles.map((missile) => (
           <Missile key={missile.key} id={missile.id} type={missile.type} position={missile.position} rotation={missile.rotation}/>
       ))}
+      <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
     {enemies.map((enemy) => (
       <Enemy
         key={enemy.id}
@@ -442,6 +444,8 @@ const Game: React.FC = () => {
         maxHealth={enemy.maxHealth}
         health={enemy.health}
         setMissiles={setMissiles}
+        missileFrequency={enemy.missileFrequency}
+        texture={enemy.texture}
         uuidv4={uuidv4}
       />
     ))}

@@ -10,14 +10,13 @@ interface PlayerProps {
 }
 
 const Player: React.FC<PlayerProps> = ({ position, width, height, rotation, moving }) => {
-  // Adjust rotation to match default orientation
 
   const playerPositioner = {
     width: `${width}px`,
     height: `${height}px`,
     left: `${position.x}px`,
     top: `${position.y}px`,
-    transform: `rotate(${rotation}deg)`, // Apply adjusted rotation
+    transform: `rotate(${rotation}deg)`
   };
 
   return (

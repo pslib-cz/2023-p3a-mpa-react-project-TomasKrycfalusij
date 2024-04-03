@@ -41,7 +41,7 @@ export const missilesSelector: MissileType[] = [
     remove: false,
     rotation: 0,
     collisions: 1,
-    damage: 3,
+    damage: 1,
     key: '',
   }
 ];

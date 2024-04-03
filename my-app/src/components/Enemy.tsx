@@ -10,6 +10,8 @@ interface EnemyProps {
   maxHealth: number;
   health: number;
   setMissiles: React.Dispatch<React.SetStateAction<MissileType[]>>;
+  missileFrequency: number;
+  texture: string;
   uuidv4: () => string;
 }
 
@@ -20,6 +22,8 @@ const Enemy: React.FC<EnemyProps> = ({
   maxHealth,
   health,
   setMissiles,
+  missileFrequency,
+  texture,
   uuidv4
 }) => {
   const latestPosition = useRef(position);
@@ -56,20 +60,17 @@ const Enemy: React.FC<EnemyProps> = ({
     );
   };
   
-  
-  
-  
 
   // Use a useEffect to trigger the spawnEnemyMissile function at a specific frequency
   useEffect(() => {
-    const enemyMissileInterval = setInterval(spawnEnemyMissile, 3000); // Adjust the interval as needed
+    const enemyMissileInterval = setInterval(spawnEnemyMissile, missileFrequency); // Adjust the interval as needed
     return () => clearInterval(enemyMissileInterval);
   }, []);
 
   return (
     <div key={id} className={enemyStyle.enemyPositioner} style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) rotate(${rotation}deg)` }}>
       <div className={enemyStyle.enemyContainer}>
-        <div className={enemyStyle.enemy}></div>
+        <div className={enemyStyle.enemy} style={{backgroundImage: `url("${texture}")`}}></div>
         <div className={enemyStyle.enemyHealthbar} style={{width: `${health / maxHealth * 100}%`}}></div>
       </div>
     </div>
