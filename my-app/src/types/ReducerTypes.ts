@@ -1,10 +1,23 @@
+import { Dispatch } from "react";
+
 // Define the Upgrade interface
 export interface Upgrade {
-    name: string;
-    cost: number;
-    type: string;
-    owned: boolean;
-  }
+  name: string;
+  cost: number;
+  type: string;
+  owned: boolean;
+  level?: number;
+}
+
+export interface PlayerInfo {
+  playerStats: {
+      money: number;
+      level: number;
+      health: number;
+      upgrades: Upgrade[];
+  };
+  dispatch: Dispatch<Action>;
+}
   
   // Define the State interface to include player stats and upgrades
   export interface State {

@@ -39,10 +39,6 @@ export const spawnMissile = (
   setMissiles(prevMissiles => [...prevMissiles, newMissile]);
 };
 
-
-
-
-
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
   // ----- PLAYER ----- //
@@ -408,7 +404,7 @@ const Game: React.FC = () => {
       const randomY = Math.random() * window.innerHeight;
 
       const newEnemy: EnemyType = {
-        ...enemiesSelector[1],
+        ...enemiesSelector[0],
         id: uuidv4(),
         position: { x: randomX, y: randomY }, // Update position with random values
       };

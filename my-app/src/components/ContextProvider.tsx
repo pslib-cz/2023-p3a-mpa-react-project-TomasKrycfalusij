@@ -1,24 +1,7 @@
 import React, { createContext, Dispatch, PropsWithChildren, useReducer } from 'react';
 import reducer, { initialState } from './Reducer';
+import { PlayerInfo } from '../types/ReducerTypes'; // Import the 'Action' type from the appropriate package
 
-import { Action } from '../types/ReducerTypes'; // Import the 'Action' type from the appropriate package
-
-interface Upgrade {
-    name: string;
-    cost: number;
-    type: string;
-    owned: boolean;
-}
-
-interface PlayerInfo {
-    playerStats: {
-        money: number;
-        level: number;
-        health: number;
-        upgrades: Upgrade[];
-    };
-    dispatch: Dispatch<Action>;
-}
 
 export const Context = createContext<PlayerInfo>({
     playerStats: initialState,

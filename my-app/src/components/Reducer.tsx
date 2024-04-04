@@ -1,12 +1,66 @@
 import { Reducer } from 'react';
 import { State, Action, ActionType } from '../types/ReducerTypes';
+import { Upgrade } from '../types/ReducerTypes';
+
+
+const initialUpgrades: Upgrade[] = [
+  {
+    name: "Basic boosters",
+    cost: 20,
+    type: "movement",
+    owned: false
+  },
+  {
+    name: "Hyper boosters",
+    cost: 40,
+    type: "movement",
+    owned: false
+  },
+  {
+    name: "Better missiles",
+    cost: 20,
+    type: "missile",
+    owned: false
+  },
+  {
+    name: "Triple missiles",
+    cost: 50,
+    type: "missile",
+    owned: false
+  },
+  {
+    name: "Explosive missiles",
+    cost: 60,
+    type: "missile",
+    owned: false
+  },
+  {
+    name: "Stronger plates",
+    cost: 20,
+    type: "health",
+    owned: false
+  },
+  {
+    name: "Titanium plates",
+    cost: 40,
+    type: "health",
+    owned: false
+  },
+  {
+    name: "Regenerative plates",
+    cost: 20,
+    type: "health",
+    owned: false,
+    level: 1
+  }
+];
 
 // Define the initial state
 export const initialState: State = {
   money: 0,
   level: 1,
   health: 10,
-  upgrades: [],
+  upgrades: initialUpgrades,
 };
 
 // Define the reducer function
