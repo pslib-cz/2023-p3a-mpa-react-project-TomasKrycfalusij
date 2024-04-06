@@ -12,6 +12,7 @@ interface EnemyProps {
   setMissiles: React.Dispatch<React.SetStateAction<MissileType[]>>;
   missileFrequency: number;
   texture: string;
+  gamePaused: boolean;
   uuidv4: () => string;
 }
 
@@ -24,6 +25,7 @@ const Enemy: React.FC<EnemyProps> = ({
   setMissiles,
   missileFrequency,
   texture,
+  gamePaused,
   uuidv4
 }) => {
   const latestPosition = useRef(position);
@@ -56,6 +58,7 @@ const Enemy: React.FC<EnemyProps> = ({
       1,
       true,
       setMissiles,
+      gamePaused,
       uuidv4
     );
   };
@@ -63,9 +66,11 @@ const Enemy: React.FC<EnemyProps> = ({
 
   // Use a useEffect to trigger the spawnEnemyMissile function at a specific frequency
   useEffect(() => {
-    const enemyMissileInterval = setInterval(spawnEnemyMissile, missileFrequency); // Adjust the interval as needed
-    return () => clearInterval(enemyMissileInterval);
-  }, []);
+    if (!gamePaused) {
+      const enemyMissileInterval = setInterval(spawnEnemyMissile, missileFrequency); // Adjust the interval as needed
+      return () => clearInterval(enemyMissileInterval);
+    }
+  }, [gamePaused]);
 
   return (
     <div key={id} className={enemyStyle.enemyPositioner} style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) rotate(${rotation}deg)` }}>

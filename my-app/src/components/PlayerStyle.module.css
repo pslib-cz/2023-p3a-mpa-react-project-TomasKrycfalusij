@@ -15,7 +15,7 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background-image: url("../assets/player/Main Ship - Base - Full health.png");
+    background-image: url("../assets/player/body/Main Ship - Base - Full health.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -27,7 +27,7 @@
     left: 0;
     height: 100%;
     width: 100%;
-    background-image: url("../assets/player/Main Ship - Engines - Supercharged Engine.png");
+    background-image: url("../assets/player/engines/Main Ship - Engines - Supercharged Engine.png");
     background-position: center;
     background-repeat: no-repeat;
     background-size: 100%;
@@ -58,15 +58,15 @@
 
 @keyframes animateBoostersDefault {
     0% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Idle.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Idle.png");
         background-position: 0% 0;
     }
     33% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Idle.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Idle.png");
         background-position: 50% 0;
     }
     66% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Idle.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Idle.png");
         background-position: 100% 0;
     }
 }
@@ -76,19 +76,19 @@
 
 @keyframes animateBoostersBoost {
     0% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Powering.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Powering.png");
         background-position: 0% 0;
     }
     25% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Powering.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Powering.png");
         background-position: 33.3% 0;
     }
     50% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Powering.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Powering.png");
         background-position: 66.6% 0;
     }
     75% {
-        background-image: url("../assets/player/Main Ship - Engines - Base Engine - Powering.png");
+        background-image: url("../assets/player/engines/Main Ship - Engines - Base Engine - Powering.png");
         background-position: 100% 0;
     }
 }

@@ -21,22 +21,25 @@ export const spawnMissile = (
   missileType: number,
   fromEnemy: boolean,
   setMissiles: React.Dispatch<React.SetStateAction<MissileType[]>>,
+  gamePaused: boolean,
   uuidv4: () => string
 ) => {
-  const selectedMissile = missilesSelector.find(missile => missile.type === missileType) || missilesSelector[0];
+  if (!gamePaused) {
+    const selectedMissile = missilesSelector.find(missile => missile.type === missileType) || missilesSelector[0];
 
-  const newMissile: MissileType = {
-    ...selectedMissile,
-    id: 1,
-    isEnemy: fromEnemy,
-    position: { x: objectPosition.x, y: objectPosition.y },
-    velocityX: normalizedDx * selectedMissile.speed,
-    velocityY: normalizedDy * selectedMissile.speed,
-    rotation: objectRotation,
-    key: uuidv4()
-  };
-
-  setMissiles(prevMissiles => [...prevMissiles, newMissile]);
+    const newMissile: MissileType = {
+      ...selectedMissile,
+      id: 1,
+      isEnemy: fromEnemy,
+      position: { x: objectPosition.x, y: objectPosition.y },
+      velocityX: normalizedDx * selectedMissile.speed,
+      velocityY: normalizedDy * selectedMissile.speed,
+      rotation: objectRotation,
+      key: uuidv4()
+    };
+  
+    setMissiles(prevMissiles => [...prevMissiles, newMissile]);
+  }
 };
 
 const Game: React.FC = () => {
@@ -53,6 +56,7 @@ const Game: React.FC = () => {
   const [playerHeight, setPlayerHeight] = useState<number>(60);
   const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
   const [isMoving, setIsMoving] = useState(false);
+  const [gamePaused, setGamePaused] = useState(false);
   // const [player, setPlayer] = useState<playrType[]>([{type: play}])
 
   // ----- MISSILES ----- //
@@ -224,6 +228,7 @@ const Game: React.FC = () => {
         2, // Example missile type, replace with desired value
         false,
         setMissiles,
+        gamePaused,
         uuidv4
       );
     };
@@ -344,11 +349,13 @@ const Game: React.FC = () => {
     
 
     const updateLoop = setInterval(() => {
-      updatePosition();
-      applyFriction();
-      updateMissilePositions();
-      moveEnemies();
-      checkMissileCollisions();
+      if (!gamePaused) {
+        updatePosition();
+        applyFriction();
+        updateMissilePositions();
+        moveEnemies();
+        checkMissileCollisions();
+      }
     }, updateRate);
 
     document.addEventListener('click', mouseClick);
@@ -357,31 +364,35 @@ const Game: React.FC = () => {
       clearInterval(updateLoop);
       document.removeEventListener('click', mouseClick);
     };
-  }, [acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight]);
+  }, [gamePaused, acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight]);
   // -----   A L L   T H E   B I G   L O G I C   ----- //
 
 
   // ----- ROTATING PLAYER ----- //
   useEffect(() => {
-    const handleMouseMove = (event: MouseEvent) => {
-      setMousePosition({ x: event.clientX, y: event.clientY });
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-
-    return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
+    if (!gamePaused) {
+      const handleMouseMove = (event: MouseEvent) => {
+        setMousePosition({ x: event.clientX, y: event.clientY });
+      };
+  
+      document.addEventListener('mousemove', handleMouseMove);
+  
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+      };
+    }
+  }, [gamePaused]);
 
   useEffect(() => {
-    const playerCenterX = playerPosition.x + playerWidth / 2;
-    const playerCenterY = playerPosition.y + playerHeight / 2;
-    const dx = mousePosition.x - playerCenterX;
-    const dy = mousePosition.y - playerCenterY;
-    const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-    setPlayerRotation(angle);
-  }, [mousePosition, playerPosition, playerWidth, playerHeight]);
+    if (!gamePaused) {
+      const playerCenterX = playerPosition.x + playerWidth / 2;
+      const playerCenterY = playerPosition.y + playerHeight / 2;
+      const dx = mousePosition.x - playerCenterX;
+      const dy = mousePosition.y - playerCenterY;
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
+      setPlayerRotation(angle);
+    }
+  }, [gamePaused, mousePosition, playerPosition, playerWidth, playerHeight]);
   // ----- ROTATING PLAYER ----- //
 
 
@@ -399,25 +410,39 @@ const Game: React.FC = () => {
 
   // ----- SPAWNING ENEMIES ----- //
   useEffect(() => {
-    const spawnEnemy = () => {
-      const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
-      const randomY = Math.random() * window.innerHeight;
-
-      const newEnemy: EnemyType = {
-        ...enemiesSelector[0],
-        id: uuidv4(),
-        position: { x: randomX, y: randomY }, // Update position with random values
+    if (!gamePaused) {
+      const spawnEnemy = () => {
+        const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
+        const randomY = Math.random() * window.innerHeight;
+  
+        const newEnemy: EnemyType = {
+          ...enemiesSelector[0],
+          id: uuidv4(),
+          position: { x: randomX, y: randomY }, // Update position with random values
+        };
+  
+        setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
       };
-
-      setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
-    };
-
-    const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
-
-    return () => clearInterval(enemySpawnTimer);
-  }, [enemySpawnInterval]);
+  
+      const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
+  
+      return () => clearInterval(enemySpawnTimer);
+    }
+  }, [gamePaused, enemySpawnInterval]);
   // ----- SPAWNING ENEMIES ----- //
 
+
+
+  // ----- PAUSING THE GAME ----- //
+  const handlePauseClick = () => {
+    setGamePaused(true);
+  };
+
+  const handleResumeClick = () => {
+    setGamePaused(false);
+  };
+
+  // ----- PAUSING THE GAME ----- //
 
   return (
   <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
@@ -431,20 +456,29 @@ const Game: React.FC = () => {
           <Missile key={missile.key} id={missile.id} type={missile.type} position={missile.position} rotation={missile.rotation}/>
       ))}
       <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
-    {enemies.map((enemy) => (
-      <Enemy
-        key={enemy.id}
-        id={enemy.id}
-        position={enemy.position}
-        rotation={enemy.rotation}
-        maxHealth={enemy.maxHealth}
-        health={enemy.health}
-        setMissiles={setMissiles}
-        missileFrequency={enemy.missileFrequency}
-        texture={enemy.texture}
-        uuidv4={uuidv4}
-      />
-    ))}
+      {enemies.map((enemy) => (
+        <Enemy
+          key={enemy.id}
+          id={enemy.id}
+          position={enemy.position}
+          rotation={enemy.rotation}
+          maxHealth={enemy.maxHealth}
+          health={enemy.health}
+          setMissiles={setMissiles}
+          missileFrequency={enemy.missileFrequency}
+          texture={enemy.texture}
+          gamePaused={gamePaused}
+          uuidv4={uuidv4}
+        />
+      ))}
+            {!gamePaused && (
+        <button onClick={handlePauseClick}>Pause</button>
+      )}
+
+      {/* Button to resume the game */}
+      {gamePaused && (
+        <button onClick={handleResumeClick}>Resume</button>
+      )}
   </div>
   );
 };
