@@ -12,7 +12,7 @@ const MainMenu = () => {
     <div className={mainMenuStyle.container}>
       <div className={mainMenuStyle.buttonsContainer}>
         <h1 className={mainMenuStyle.header}>Protect the sun!</h1>
-        <h2 className={mainMenuStyle.sectionName}>MainMenu</h2>
+        <h2 className={mainMenuStyle.sectionName}>Main Menu</h2>
         <Link className={mainMenuStyle.menuLink} to="/game">Start Game</Link>
       </div>
       <div className={mainMenuStyle.playerIcon}></div>
