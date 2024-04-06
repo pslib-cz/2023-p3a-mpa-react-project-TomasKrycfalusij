@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import enemyStyle from './EnemyStyle.module.css';
 import { MissileType } from '../types/MissileTypes';
-import { spawnMissile } from '../Game';
+import { spawnMissile } from '../pages/Game';
 
 interface EnemyProps {
   id: string;

@@ -1,0 +1,79 @@
+.container {
+    width: 100vw;
+    height: 100vh;
+    background-image: url(../assets/backgrounds/galaxybg.jpg);
+    background-size: cover;
+    background-position: center;
+}
+
+.buttonsContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.header {
+    font-size: 4em;
+    margin: 1rem;
+}
+
+.sectionName {
+    font-size: 3em;
+    margin: 1rem;
+}
+
+.menuLink {
+    text-decoration: none;
+    color: blue;
+    font-size: 2em;
+}
+
+.playerIcon {
+    position: absolute;
+    top: 70%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 16rem;
+    height: 16rem;
+    background-image: url("../assets/player/body/Main Ship - Base - Full health.png");
+    background-size: cover;
+    background-position: center;
+    animation: playerIconAnimation 1s infinite;
+}
+
+@keyframes playerIconAnimation {
+    0% {
+        transform: translate(-50%, -50%) rotateZ(45deg);
+    }
+    50% {
+        transform: translate(-50%, -50%) rotateZ(-45deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateZ(45deg);
+    }
+}
+
+.enemyIcon {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    width: 10rem;
+    height: 10rem;
+    background-image: url("../assets/enemies/Nairan - Torpedo Ship - Base.png");
+    background-size: cover;
+    background-position: center;
+    animation: enemyIconAnimation 3s linear infinite;
+}
+
+@keyframes enemyIconAnimation {
+    0% {
+        transform: translate(-50%, -50%) rotateZ(0deg);
+    }
+    100% {
+        transform: translate(-50%, -50%) rotateZ(360deg);
+    }
+}

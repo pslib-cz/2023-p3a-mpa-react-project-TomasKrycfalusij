@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useContext } from 'react';
-import Player from './components/Player';
-import gameStyle from './GameStyle.module.css';
-import Missile from './components/Missile';
+import Player from '../components/Player';
+import gameStyle from '../GameStyle.module.css';
+import Missile from '../components/Missile';
 import { v4 as uuidv4 } from 'uuid';
-import { Context } from './components/ContextProvider'; // Assuming your context file is named Context.js or Context.tsx
-import { ActionType } from './types/ReducerTypes'; // Assuming you exported ActionType enum from your reducer file
-import Enemy from './components/Enemy';
+import { Context } from '../components/ContextProvider'; // Assuming your context file is named Context.js or Context.tsx
+import { ActionType } from '../types/ReducerTypes'; // Assuming you exported ActionType enum from your reducer file
+import Enemy from '../components/Enemy';
 
-import { EnemyType, enemiesSelector } from './types/EnemyTypes';
-import { Coordinates } from './types/BasicTypes';
-import { MissileType, missilesSelector } from './types/MissileTypes';
+import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
+import { Coordinates } from '../types/BasicTypes';
+import { MissileType, missilesSelector } from '../types/MissileTypes';
 
 
 
@@ -45,7 +45,10 @@ export const spawnMissile = (
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
   // ----- PLAYER ----- //
-  const [playerPosition, setPlayerPosition] = useState<Coordinates>({ x: 100, y: 100 });
+  const [playerPosition, setPlayerPosition] = useState<Coordinates>({
+    x: window.innerWidth / 2,
+    y: window.innerHeight / 2,
+  });
   const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
   const [playerRotation, setPlayerRotation] = useState<number>(0);
   const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
