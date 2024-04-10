@@ -9,6 +9,7 @@ import Enemy from '../components/Enemy';
 import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
 import { Coordinates } from '../types/BasicTypes';
 import { MissileType, missilesSelector } from '../types/MissileTypes';
+import { Joystick } from 'react-joystick-component';
 
 export const spawnMissile = (
   normalizedDx: number,
@@ -79,6 +80,7 @@ const Game: React.FC = () => {
   const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
   const [isMoving, setIsMoving] = useState(false);
   const [gamePaused, setGamePaused] = useState(false);
+  const [movement, setMovement] = useState<string | null>(null);
   // const [player, setPlayer] = useState<playrType[]>([{type: play}])
 
   // ----- MISSILES ----- //
@@ -95,6 +97,37 @@ const Game: React.FC = () => {
   const enemySpawnInterval = 3000;
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
 
+  type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
+
+  interface IJoystickUpdateEvent {
+    type: "move" | "stop" | "start";
+    x: number | null;
+    y: number | null;
+    direction: JoystickDirection | null;
+    distance: number; // Percentile 0-100% of joystick 
+  }
+
+  const updateJoystickMove = () => {
+    return (event: IJoystickUpdateEvent) => {
+      if (event.type === "move") {
+        if (event.direction === "FORWARD") {
+          setMovement("FORWARD");
+          console.log(event.direction)
+        } else if (event.direction === "BACKWARD") {
+          setMovement("BACKWARD");
+          console.log(event.direction)
+        } else if (event.direction === "LEFT") {
+          setMovement("LEFT");
+          console.log(event.direction)
+        } else if (event.direction === "RIGHT") {
+          setMovement("RIGHT");
+          console.log(event.direction)
+        }
+      } else if (event.type === "stop") {
+        setMovement(null);
+      }
+    };
+  }
 
   // ----- HANDLING KEYBOARD ACTIONS ----- //
   useEffect(() => {
@@ -118,7 +151,28 @@ const Game: React.FC = () => {
         default:
           break;
       }
-    };
+  };
+
+  switch (movement) {
+    case 'FORWARD':
+      setAcceleration((prevAcceleration) => ({ ...prevAcceleration, y: -accelerationRate }));
+      break;
+    case 'BACKWARD':
+      setAcceleration((prevAcceleration) => ({ ...prevAcceleration, y: accelerationRate }));
+      break;
+    case 'LEFT':
+      setAcceleration((prevAcceleration) => ({ ...prevAcceleration, x: -accelerationRate }));
+      break;
+    case 'RIGHT':
+      setAcceleration((prevAcceleration) => ({ ...prevAcceleration, x: accelerationRate }));
+      break;
+    case null:
+      setAcceleration((prevAcceleration) => ({ ...prevAcceleration, y: 0 }));
+      setAcceleration((prevAcceleration) => ({ ...prevAcceleration, x: 0 }));
+      break;
+    default:
+      break;
+  }
 
     const handleKeyUp = (e: KeyboardEvent) => {
       if (e.key.startsWith('Arrow')) {
@@ -145,7 +199,7 @@ const Game: React.FC = () => {
       document.removeEventListener('keydown', handleKeyDown);
       document.removeEventListener('keyup', handleKeyUp);
     };
-  }, [accelerationRate]);
+  }, [accelerationRate, movement]);
   // ----- HANDLING KEYBOARD ACTIONS ----- //
 
 
@@ -462,6 +516,17 @@ const Game: React.FC = () => {
 
   // ----- PAUSING THE GAME ----- //
 
+  
+const styles = {
+  container: {
+    position: 'fixed',
+    bottom: '30px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    zIndex: 9999,
+  },
+};
+
   return (
   <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
       <div className={gameStyle.stats}>
@@ -497,6 +562,9 @@ const Game: React.FC = () => {
       {gamePaused && (
         <button onClick={handleResumeClick}>Resume</button>
       )}
+      <div style={styles.container}>
+        <Joystick move={updateJoystickMove()} stop={updateJoystickMove()} size={100} baseColor="red" stickColor="blue"></Joystick>
+      </div>
   </div>
   );
 };
