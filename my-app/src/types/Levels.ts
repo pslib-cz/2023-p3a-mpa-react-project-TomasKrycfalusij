@@ -3,7 +3,7 @@ export interface LevelType {
     enemies: number[];
 }
 
-export const Levels: LevelType[] = [
+export const allLevels: LevelType[] = [
     {
         level: 1,
         enemies: [4]

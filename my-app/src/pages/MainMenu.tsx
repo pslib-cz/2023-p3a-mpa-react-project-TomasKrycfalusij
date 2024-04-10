@@ -13,9 +13,10 @@ const MainMenu = () => {
       <div className={mainMenuStyle.buttonsContainer}>
         <h1 className={mainMenuStyle.header}>Protect the sun!</h1>
         <h2 className={mainMenuStyle.sectionName}>Main Menu</h2>
-        <Link className={mainMenuStyle.menuLink} to="/game">Start Game</Link>
+        <Link className={mainMenuStyle.menuLink} to="/levels">Levels</Link>
       </div>
       <div className={mainMenuStyle.playerIcon}></div>
+      {/*
       <div className={mainMenuStyle.leftEnemies}>
         {leftEnemies.map((enemy, index) => (
           <div key={index} style={{ top: `${index * 33.33 + 16.5}%`, left: "20%" }} className={mainMenuStyle.enemyIcon}></div>
@@ -26,6 +27,7 @@ const MainMenu = () => {
           <div key={index} style={{ top: `${index * 33.33 + 16.5}%`, left: "80%" }} className={mainMenuStyle.enemyIcon}></div>
         ))}
       </div>
+      */}
     </div>
   );
 };

@@ -58,8 +58,9 @@ const initialUpgrades: Upgrade[] = [
 // Define the initial state
 export const initialState: State = {
   money: 0,
-  level: 1,
   health: 10,
+  level: 1,
+  gameLevelReached: 1,
   upgrades: initialUpgrades,
 };
 
@@ -70,11 +71,6 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
       return {
         ...state,
         money: state.money + action.payload,
-      };
-    case ActionType.UPDATE_LEVEL:
-      return {
-        ...state,
-        level: action.payload,
       };
     case ActionType.UPDATE_PLAYER_HEALTH:
       return {
@@ -94,6 +90,16 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
           return upgrade;
         }),
       };
+    case ActionType.UPDATE_LEVEL:
+        return {
+          ...state,
+          level: action.payload,
+        };
+    case ActionType.UPDATE_GAME_LEVEL_REACHED:
+      return {
+        ...state,
+        gameLevelReached: action.payload,
+      }
     default:
       return state;
   }

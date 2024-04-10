@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import Player from '../components/Player';
-import gameStyle from '../GameStyle.module.css';
+import gameStyle from './GameStyle.module.css';
 import Missile from '../components/Missile';
 import { v4 as uuidv4 } from 'uuid';
-import { Context } from '../components/ContextProvider'; // Assuming your context file is named Context.js or Context.tsx
-import { ActionType } from '../types/ReducerTypes'; // Assuming you exported ActionType enum from your reducer file
+import { Context } from '../components/ContextProvider';
+import { ActionType } from '../types/ReducerTypes';
 import Enemy from '../components/Enemy';
-
 import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
 import { Coordinates } from '../types/BasicTypes';
 import { MissileType, missilesSelector } from '../types/MissileTypes';
-
-
 
 export const spawnMissile = (
   normalizedDx: number,
@@ -44,10 +41,32 @@ export const spawnMissile = (
 
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
+    // ----- OTHER ----- //
+
+    const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
+    const [screenHeight, setScreenHeight] = useState<number>(window.innerHeight);
+
+    useEffect(() => {
+      const updateScreenValues = () => {
+        const newScreenHeight = window.innerWidth > 960 ? window.innerHeight : window.innerHeight - 200;
+        setScreenHeight(newScreenHeight);
+        setScreenWidth(window.innerWidth);
+        console.log("change")
+      };
+    
+      updateScreenValues(); // Call once to initialize the state
+    
+      window.addEventListener('resize', updateScreenValues); // Listen for window resize events
+    
+      return () => {
+        window.removeEventListener('resize', updateScreenValues); // Clean up event listener on unmount
+      };
+    }, []); 
+
   // ----- PLAYER ----- //
   const [playerPosition, setPlayerPosition] = useState<Coordinates>({
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
+    x: screenWidth / 2,
+    y: screenHeight / 2,
   });
   const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
   const [playerRotation, setPlayerRotation] = useState<number>(0);
@@ -75,10 +94,6 @@ const Game: React.FC = () => {
   const [enemies, setEnemies] = useState<EnemyType[]>([]);
   const enemySpawnInterval = 3000;
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
-
-  // ----- OTHER ----- //
-  const screenWidth = window.innerWidth;
-  const screenHeight = window.innerHeight;
 
 
   // ----- HANDLING KEYBOARD ACTIONS ----- //
@@ -147,15 +162,15 @@ const Game: React.FC = () => {
       setVelocity(updatedVelocity);
     
       const updatedPlayerPosition = {
-        x: Math.min(window.innerWidth - playerWidth, Math.max(0, playerPosition.x + updatedVelocity.x)),
-        y: Math.min(window.innerHeight - playerHeight, Math.max(0, playerPosition.y + updatedVelocity.y)),
+        x: Math.min(screenWidth - playerWidth, Math.max(0, playerPosition.x + updatedVelocity.x)),
+        y: Math.min(screenHeight - playerHeight, Math.max(0, playerPosition.y + updatedVelocity.y)),
       };
     
       const hitsBorder =
         updatedPlayerPosition.x === 0 ||
-        updatedPlayerPosition.x === window.innerWidth - playerWidth ||
+        updatedPlayerPosition.x === screenWidth - playerWidth ||
         updatedPlayerPosition.y === 0 ||
-        updatedPlayerPosition.y === window.innerHeight - playerHeight;
+        updatedPlayerPosition.y === screenHeight - playerHeight;
     
       if (hitsBorder) {
         setAcceleration({ x: 0, y: 0 });
@@ -194,9 +209,9 @@ const Game: React.FC = () => {
         prevMissiles.map((missile) => {
           const withinBoundaries =
             missile.position.x >= 0 &&
-            missile.position.x <= window.innerWidth &&
+            missile.position.x <= screenWidth &&
             missile.position.y >= 0 &&
-            missile.position.y <= window.innerHeight;
+            missile.position.y <= screenHeight;
 
           const newPosition = {
             x: missile.position.x + missile.velocityX,
@@ -367,7 +382,7 @@ const Game: React.FC = () => {
       clearInterval(updateLoop);
       document.removeEventListener('click', mouseClick);
     };
-  }, [gamePaused, acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight]);
+  }, [gamePaused, acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight, screenHeight]);
   // -----   A L L   T H E   B I G   L O G I C   ----- //
 
 
@@ -415,8 +430,8 @@ const Game: React.FC = () => {
   useEffect(() => {
     if (!gamePaused) {
       const spawnEnemy = () => {
-        const randomX = Math.random() < 0.5 ? -50 : window.innerWidth + 50;
-        const randomY = Math.random() * window.innerHeight;
+        const randomX = Math.random() < 0.5 ? -50 : screenWidth + 50;
+        const randomY = Math.random() * screenHeight;
   
         const newEnemy: EnemyType = {
           ...enemiesSelector[0],
@@ -431,7 +446,7 @@ const Game: React.FC = () => {
   
       return () => clearInterval(enemySpawnTimer);
     }
-  }, [gamePaused, enemySpawnInterval]);
+  }, [gamePaused, enemySpawnInterval, screenHeight]);
   // ----- SPAWNING ENEMIES ----- //
 
 

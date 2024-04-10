@@ -1,12 +1,18 @@
 .gameBackground {
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - 200px);
     overflow: hidden;
-    background-image: url("./assets/backgrounds/spacetile.png");
+    background-image: url("../assets/backgrounds/spacetile.png");
     background-repeat: repeat;
     background-position: 0px 0px;
     background-size: 50%;
     user-select: none;
+}
+
+@media screen and (min-width: 960px) {
+    .gameBackground {
+        height: 100vh;
+    }
 }
 
 .stats {

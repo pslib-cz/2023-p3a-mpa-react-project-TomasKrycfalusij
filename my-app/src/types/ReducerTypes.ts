@@ -12,8 +12,9 @@ export interface Upgrade {
 export interface PlayerInfo {
   playerStats: {
       money: number;
-      level: number;
       health: number;
+      level: number;
+      gameLevelReached: number;
       upgrades: Upgrade[];
   };
   dispatch: Dispatch<Action>;
@@ -22,8 +23,9 @@ export interface PlayerInfo {
   // Define the State interface to include player stats and upgrades
   export interface State {
     money: number;
-    level: number;
     health: number;
+    level: number;
+    gameLevelReached: number;
     upgrades: Upgrade[];
   }
   
@@ -33,6 +35,7 @@ export interface PlayerInfo {
     UPDATE_LEVEL = 'UPDATE_LEVEL',
     UPDATE_PLAYER_HEALTH = 'UPDATE_PLAYER_HEALTH', // New action type for updating player health
     UPDATE_UPGRADE = 'UPDATE_UPGRADE',
+    UPDATE_GAME_LEVEL_REACHED = 'UPDATE_GAME_LEVEL_REACHED'
   }
   
   // Define the action interfaces
@@ -59,9 +62,14 @@ export interface PlayerInfo {
     payload: number;
   }
   
+  export interface UpdateGameLevelReached {
+    type: ActionType.UPDATE_GAME_LEVEL_REACHED;
+    payload: number;
+  }
   export type Action =
     | UpdateMoneyAction
     | UpdateLevelAction
     | UpdatePlayerHealthAction
-    | UpdateUpgradeAction;
+    | UpdateUpgradeAction
+    | UpdateGameLevelReached;
   

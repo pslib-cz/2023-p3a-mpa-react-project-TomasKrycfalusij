@@ -1,0 +1,20 @@
+.levelsList {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+
+}
+
+.singleLevel {
+    padding: 1em;
+    background-color: gray;
+}
+
+.notReached {
+    background-color: red;
+}
+
+.reached {
+    background-color: green;
+}
