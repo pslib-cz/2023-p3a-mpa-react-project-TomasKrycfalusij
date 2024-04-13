@@ -24,3 +24,18 @@
 .statsValue {
     color: white;
 }
+
+.joystickContainer {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 99;
+    display: block;
+}
+
+@media screen and (min-width: 960px) {
+    .joystickContainer {
+        display: none;
+    }
+}

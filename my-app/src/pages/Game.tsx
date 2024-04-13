@@ -10,6 +10,7 @@ import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
 import { Coordinates } from '../types/BasicTypes';
 import { MissileType, missilesSelector } from '../types/MissileTypes';
 import { Joystick } from 'react-joystick-component';
+import { allLevels } from '../types/Levels';
 
 export const spawnMissile = (
   normalizedDx: number,
@@ -96,6 +97,7 @@ const Game: React.FC = () => {
   const [enemies, setEnemies] = useState<EnemyType[]>([]);
   const enemySpawnInterval = 3000;
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
+  const [totalEnemiesSpawned, setTotalEnemiesSpawned] = useState<number>(0);
 
   type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
 
@@ -483,7 +485,12 @@ const Game: React.FC = () => {
   // ----- SPAWNING ENEMIES ----- //
   useEffect(() => {
     if (!gamePaused) {
+
+      const sumOfEnemiesInLevel = allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0);
+      const maxEnemiesToSpawn = Math.ceil(sumOfEnemiesInLevel / 2);
+
       const spawnEnemy = () => {
+        if (enemies.length < maxEnemiesToSpawn && totalEnemiesSpawned < sumOfEnemiesInLevel) {
         const randomX = Math.random() < 0.5 ? -50 : screenWidth + 50;
         const randomY = Math.random() * screenHeight;
   
@@ -494,14 +501,29 @@ const Game: React.FC = () => {
         };
   
         setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
+        setTotalEnemiesSpawned((prevTotalEnemiesSpawned) => prevTotalEnemiesSpawned + 1);
+        
+        }
       };
-  
+      
       const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
   
       return () => clearInterval(enemySpawnTimer);
     }
-  }, [gamePaused, enemySpawnInterval, screenHeight]);
+  }, [gamePaused, enemies.length, enemySpawnInterval, screenHeight, screenWidth]);
   // ----- SPAWNING ENEMIES ----- //
+
+
+
+  // ----- LEVEL COMPLETION ----- //
+
+  useEffect(() => {
+    if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
+      console.log("Level completed")
+
+    }
+  }, [enemiesKilled, playerStats.level]);
+  // ----- LEVEL COMPLETION ----- //
 
 
 
@@ -516,16 +538,6 @@ const Game: React.FC = () => {
 
   // ----- PAUSING THE GAME ----- //
 
-  
-const styles = {
-  container: {
-    position: 'fixed',
-    bottom: '30px',
-    left: '50%',
-    transform: 'translateX(-50%)',
-    zIndex: 9999,
-  },
-};
 
   return (
   <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
@@ -562,7 +574,7 @@ const styles = {
       {gamePaused && (
         <button onClick={handleResumeClick}>Resume</button>
       )}
-      <div style={styles.container}>
+      <div className={gameStyle.joystickContainer}>
         <Joystick move={updateJoystickMove()} stop={updateJoystickMove()} size={100} baseColor="red" stickColor="blue"></Joystick>
       </div>
   </div>
