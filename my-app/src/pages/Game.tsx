@@ -65,6 +65,8 @@ const Game: React.FC = () => {
       };
     }, []); 
 
+    const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
+
   // ----- PLAYER ----- //
   const [playerPosition, setPlayerPosition] = useState<Coordinates>({
     x: screenWidth / 2,
@@ -481,32 +483,65 @@ const Game: React.FC = () => {
   // ----- BACKGROUND ----- //
 
 
+  const [array, setArray] = useState([1, 2, 3]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const nonZeroIndexes = array.reduce((acc, num, index) => {
+        if (num !== 0) acc.push(index);
+        return acc;
+      }, []);
+
+      if (nonZeroIndexes.length === 0) {
+        console.log("finished");
+        clearInterval(interval);
+      } else {
+        const randomIndex = nonZeroIndexes[Math.floor(Math.random() * nonZeroIndexes.length)];
+        const newArray = [...array];
+        if (newArray[randomIndex] > 0) {
+          newArray[randomIndex]--;
+          console.log(`Index ${randomIndex} decremented, new value: ${newArray[randomIndex]}`);
+        }
+        setArray(newArray);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [array]);
 
   // ----- SPAWNING ENEMIES ----- //
   useEffect(() => {
+    
     if (!gamePaused) {
-
-      const sumOfEnemiesInLevel = allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0);
+      const levelConfig = allLevels[playerStats.level - 1];
+      const sumOfEnemiesInLevel = levelConfig.enemies.reduce((sum, enemy) => sum + enemy, 0);
       const maxEnemiesToSpawn = Math.ceil(sumOfEnemiesInLevel / 2);
+      
+      for (let i: number = 0; i < levelConfigCopy.enemies.length; i++) {
+        while (levelConfigCopy.enemies[i] > 0) {
+          levelConfigCopy.enemies[i]--;
+        }
+      }
+
 
       const spawnEnemy = () => {
         if (enemies.length < maxEnemiesToSpawn && totalEnemiesSpawned < sumOfEnemiesInLevel) {
-        const randomX = Math.random() < 0.5 ? -50 : screenWidth + 50;
-        const randomY = Math.random() * screenHeight;
-  
-        const newEnemy: EnemyType = {
-          ...enemiesSelector[0],
-          id: uuidv4(),
-          position: { x: randomX, y: randomY }, // Update position with random values
-        };
-  
-        setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
-        setTotalEnemiesSpawned((prevTotalEnemiesSpawned) => prevTotalEnemiesSpawned + 1);
+          const randomX = Math.random() < 0.5 ? -50 : screenWidth + 50;
+          const randomY = Math.random() * screenHeight;
+    
+          const newEnemy: EnemyType = {
+            ...enemiesSelector[0], // enemy 0 is the 0th index in the enemiesSelector array, 
+            id: uuidv4(),
+            position: { x: randomX, y: randomY },
+          };
+    
+          setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
+          setTotalEnemiesSpawned((prevTotalEnemiesSpawned) => prevTotalEnemiesSpawned + 1);
         
         }
       };
       
-      const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
+      const enemySpawnTimer = setInterval(spawnEnemy, 500);
   
       return () => clearInterval(enemySpawnTimer);
     }
@@ -518,10 +553,16 @@ const Game: React.FC = () => {
   // ----- LEVEL COMPLETION ----- //
 
   useEffect(() => {
-    if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
+    const sumOfEnemiesInLevel = levelConfigCopy.enemies.reduce((sum, enemy) => sum + enemy, 0);
+    if (sumOfEnemiesInLevel <= 0) {
+      console.log("Level completed")
+    }
+    /*
+        if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
       console.log("Level completed")
 
     }
+    */
   }, [enemiesKilled, playerStats.level]);
   // ----- LEVEL COMPLETION ----- //
 

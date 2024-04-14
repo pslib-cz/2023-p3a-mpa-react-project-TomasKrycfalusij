@@ -52,5 +52,22 @@ export const enemiesSelector: EnemyType[] = [
     name: "Střelec",
     description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
     texture: "/src/assets/enemies/Nairan - Scout - Base.png"
+  },
+  {
+    id: "enemy3",
+    type: 3,
+    position: { x: 0, y: 0 },
+    velocityX: 0,
+    velocityY: 0,
+    rotation: 0,
+    maxHealth: 1,
+    health: 1,
+    speed: 2,
+    reward: 10,
+    missileType: 1,
+    missileFrequency: 3500,
+    name: "Střelec",
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
+    texture: "/src/assets/enemies/Nairan - Scout - Base.png"
   }
 ];
