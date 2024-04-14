@@ -6,6 +6,7 @@ import { spawnMissile } from '../pages/Game';
 interface EnemyProps {
   id: string;
   position: { x: number; y: number };
+  type: number;
   rotation: number;
   maxHealth: number;
   health: number;
@@ -19,6 +20,7 @@ interface EnemyProps {
 const Enemy: React.FC<EnemyProps> = ({
   id,
   position,
+  type,
   rotation,
   maxHealth,
   health,
@@ -66,7 +68,7 @@ const Enemy: React.FC<EnemyProps> = ({
 
   // Use a useEffect to trigger the spawnEnemyMissile function at a specific frequency
   useEffect(() => {
-    if (!gamePaused) {
+    if (!gamePaused && type === 1) {
       const enemyMissileInterval = setInterval(spawnEnemyMissile, missileFrequency); // Adjust the interval as needed
       return () => clearInterval(enemyMissileInterval);
     }

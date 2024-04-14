@@ -75,7 +75,7 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     case ActionType.UPDATE_PLAYER_HEALTH:
       return {
         ...state,
-        health: state.health - action.payload,
+        health: state.health + action.payload,
       };
     case ActionType.UPDATE_UPGRADE: // Handle update upgrade action
       return {

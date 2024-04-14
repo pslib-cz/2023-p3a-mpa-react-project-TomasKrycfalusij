@@ -66,6 +66,7 @@ const Game: React.FC = () => {
     }, []); 
 
     const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
+    const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
 
   // ----- PLAYER ----- //
   const [playerPosition, setPlayerPosition] = useState<Coordinates>({
@@ -368,11 +369,12 @@ const Game: React.FC = () => {
 
 
     // ----- CHECKING COLLISIONS ----- //
-    const checkMissileCollisions = () => {
-      setEnemies((prevEnemies) =>
+  const checkMissileCollisions = () => {
+    setEnemies((prevEnemies) =>
       prevEnemies.map((enemy) => {
         let updatedEnemy = { ...enemy };
         let collisionDetected = false;
+        let hitPlayer = false;
         missiles.forEach((missile, index) => {
           if (!collisionDetected && missile.collisions > 0) {
             const dxEnemy = enemy.position.x - missile.position.x;
@@ -389,38 +391,59 @@ const Game: React.FC = () => {
                 return updatedMissiles.filter((_, idx) => idx !== index);
               });
               if (updatedEnemy.health > 0) {
-                // Calculate damage based on missile's properties and enemy's speed
                 updatedEnemy.health -= missile.damage;
-
-                if (updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
-                  setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
-                  dispatch({ type: ActionType.UPDATE_MONEY, payload: enemy.reward });
-                }
               }
             }
           }
         });
-        return updatedEnemy;
-      }).filter((enemy) => enemy.health > 0)
-      );
-      missiles.map((missile, index) => {
-        const dxPlayer = playerPosition.x - missile.position.x + (playerWidth / 2);
-        const dyPlayer = playerPosition.y - missile.position.y + (playerHeight / 2);
+
+        const playerCenterX = playerPosition.x + playerWidth / 2;
+        const playerCenterY = playerPosition.y + playerHeight / 2;
+        const dxPlayer = playerCenterX - enemy.position.x;
+        const dyPlayer = playerCenterY - enemy.position.y;
         const distancePlayer = Math.sqrt(dxPlayer * dxPlayer + dyPlayer * dyPlayer);
         const collisionPlayer = distancePlayer < (playerWidth / 2);
 
-        if (collisionPlayer && missile.isEnemy) {
-          dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: missile.damage });
-          const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
-          setMissiles((prevMissiles) => {
-            const updatedMissiles = [...prevMissiles];
-            updatedMissiles[index] = updatedMissile;
-            return updatedMissiles.filter((_, idx) => idx !== index);
-          });
+        if (collisionPlayer && enemy.type === 2) {
+          hitPlayer = true;
+          updatedEnemy.health = 0;
         }
-      })
-    };
-    // ----- CHECKING COLLISIONS ----- //
+
+        if (hitPlayer && !enemiesKilled.get(updatedEnemy.id)) {
+          setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
+          dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -1 }); // here is the error
+        }
+
+        if (!hitPlayer && updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
+          setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
+          dispatch({ type: ActionType.UPDATE_MONEY, payload: enemy.reward });
+        }
+
+        return updatedEnemy;
+      }).filter((enemy) => enemy.health > 0)
+    );
+
+    missiles.map((missile, index) => {
+
+      
+      const dxPlayer = playerPosition.x - missile.position.x + (playerWidth / 2);
+      const dyPlayer = playerPosition.y - missile.position.y + (playerHeight / 2);
+      const distancePlayer = Math.sqrt(dxPlayer * dxPlayer + dyPlayer * dyPlayer);
+      const collisionPlayer = distancePlayer < 100;
+
+      if (collisionPlayer && missile.isEnemy) {
+        dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -missile.damage });
+        const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
+        setMissiles((prevMissiles) => {
+          const updatedMissiles = [...prevMissiles];
+          updatedMissiles[index] = updatedMissile;
+          return updatedMissiles.filter((_, idx) => idx !== index);
+        });
+      }
+    });
+  };
+// ----- CHECKING COLLISIONS ----- //
+
 
     
 
@@ -483,65 +506,49 @@ const Game: React.FC = () => {
   // ----- BACKGROUND ----- //
 
 
-  const [array, setArray] = useState([1, 2, 3]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const nonZeroIndexes = array.reduce((acc, num, index) => {
-        if (num !== 0) acc.push(index);
-        return acc;
-      }, []);
-
-      if (nonZeroIndexes.length === 0) {
-        console.log("finished");
-        clearInterval(interval);
-      } else {
-        const randomIndex = nonZeroIndexes[Math.floor(Math.random() * nonZeroIndexes.length)];
-        const newArray = [...array];
-        if (newArray[randomIndex] > 0) {
-          newArray[randomIndex]--;
-          console.log(`Index ${randomIndex} decremented, new value: ${newArray[randomIndex]}`);
-        }
-        setArray(newArray);
-      }
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [array]);
+  
 
   // ----- SPAWNING ENEMIES ----- //
   useEffect(() => {
-    
     if (!gamePaused) {
       const levelConfig = allLevels[playerStats.level - 1];
       const sumOfEnemiesInLevel = levelConfig.enemies.reduce((sum, enemy) => sum + enemy, 0);
       const maxEnemiesToSpawn = Math.ceil(sumOfEnemiesInLevel / 2);
-      
-      for (let i: number = 0; i < levelConfigCopy.enemies.length; i++) {
-        while (levelConfigCopy.enemies[i] > 0) {
-          levelConfigCopy.enemies[i]--;
-        }
-      }
-
 
       const spawnEnemy = () => {
         if (enemies.length < maxEnemiesToSpawn && totalEnemiesSpawned < sumOfEnemiesInLevel) {
           const randomX = Math.random() < 0.5 ? -50 : screenWidth + 50;
           const randomY = Math.random() * screenHeight;
+
+          const nonZeroIndexes = array.reduce((acc, num, index) => {
+            if (num !== 0) acc.push(index);
+            return acc;
+          }, []);
     
-          const newEnemy: EnemyType = {
-            ...enemiesSelector[0], // enemy 0 is the 0th index in the enemiesSelector array, 
-            id: uuidv4(),
-            position: { x: randomX, y: randomY },
-          };
-    
-          setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
-          setTotalEnemiesSpawned((prevTotalEnemiesSpawned) => prevTotalEnemiesSpawned + 1);
-        
+          if (nonZeroIndexes.length === 0) {
+            console.log("finished");
+            return
+          } else {
+            const randomIndex = nonZeroIndexes[Math.floor(Math.random() * nonZeroIndexes.length)];
+            const newArray = [...array];
+
+            const newEnemy: EnemyType = {
+              ...enemiesSelector[randomIndex],
+              id: uuidv4(),
+              position: { x: randomX, y: randomY },
+            };
+            setEnemies((prevEnemies) => [...prevEnemies, newEnemy]);
+            setTotalEnemiesSpawned((prevTotalEnemiesSpawned) => prevTotalEnemiesSpawned + 1);
+
+            if (newArray[randomIndex] > 0) {
+              newArray[randomIndex]--;
+            }
+            setArray(prev => prev = [...newArray]);
+          }
         }
       };
       
-      const enemySpawnTimer = setInterval(spawnEnemy, 500);
+      const enemySpawnTimer = setInterval(spawnEnemy, enemySpawnInterval);
   
       return () => clearInterval(enemySpawnTimer);
     }
@@ -553,16 +560,10 @@ const Game: React.FC = () => {
   // ----- LEVEL COMPLETION ----- //
 
   useEffect(() => {
-    const sumOfEnemiesInLevel = levelConfigCopy.enemies.reduce((sum, enemy) => sum + enemy, 0);
-    if (sumOfEnemiesInLevel <= 0) {
-      console.log("Level completed")
-    }
-    /*
         if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
       console.log("Level completed")
 
     }
-    */
   }, [enemiesKilled, playerStats.level]);
   // ----- LEVEL COMPLETION ----- //
 
@@ -596,6 +597,7 @@ const Game: React.FC = () => {
         <Enemy
           key={enemy.id}
           id={enemy.id}
+          type={enemy.type}
           position={enemy.position}
           rotation={enemy.rotation}
           maxHealth={enemy.maxHealth}

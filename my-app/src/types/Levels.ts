@@ -6,7 +6,7 @@ export interface LevelType {
 export const allLevels: LevelType[] = [
     {
         level: 1,
-        enemies: [4, 2]
+        enemies: [0, 10]
     },
     {
         level: 2,
