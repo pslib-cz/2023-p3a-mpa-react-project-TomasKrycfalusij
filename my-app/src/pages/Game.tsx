@@ -11,6 +11,7 @@ import { Coordinates } from '../types/BasicTypes';
 import { MissileType, missilesSelector } from '../types/MissileTypes';
 import { Joystick } from 'react-joystick-component';
 import { allLevels } from '../types/Levels';
+import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';"c:/Users/nestr/OneDrive/Plocha/School/webs/2023-p3a-mpa-react-project-TomasKrycfalusij/my-app/node_modules/react-joystick-component/build/lib/Joystick"
 
 export const spawnMissile = (
   normalizedDx: number,
@@ -65,7 +66,7 @@ const Game: React.FC = () => {
       };
     }, []); 
 
-    const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
+    // const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
     const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
 
   // ----- PLAYER ----- //
@@ -76,11 +77,16 @@ const Game: React.FC = () => {
   const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
   const [playerRotation, setPlayerRotation] = useState<number>(0);
   const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
-  const [maxSpeed, setMaxSpeed] = useState<number>(2);
-  const [accelerationRate, setAccelerationRate] = useState<number>(0.02);
-  const [friction, setFriction] = useState<number>(0.02);
-  const [playerWidth, setPlayerWidth] = useState<number>(60);
-  const [playerHeight, setPlayerHeight] = useState<number>(60);
+  const maxSpeed: number = 2
+  // const [maxSpeed, setMaxSpeed] = useState<number>(2);
+  const accelerationRate: number = 0.02
+  // const [accelerationRate, setAccelerationRate] = useState<number>(0.02);
+  const friction: number = 0.02
+  // const [friction, setFriction] = useState<number>(0.02);
+  const playerWidth: number = 60
+  // const [playerWidth, setPlayerWidth] = useState<number>(60);
+  const playerHeight: number = 60
+  // const [playerHeight, setPlayerHeight] = useState<number>(60);
   const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
   const [isMoving, setIsMoving] = useState(false);
   const [gamePaused, setGamePaused] = useState(false);
@@ -102,38 +108,27 @@ const Game: React.FC = () => {
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
   const [totalEnemiesSpawned, setTotalEnemiesSpawned] = useState<number>(0);
 
-  type JoystickDirection = "FORWARD" | "RIGHT" | "LEFT" | "BACKWARD";
-
-  interface IJoystickUpdateEvent {
-    type: "move" | "stop" | "start";
-    x: number | null;
-    y: number | null;
-    direction: JoystickDirection | null;
-    distance: number; // Percentile 0-100% of joystick 
-  }
-
-  const updateJoystickMove = () => {
-    return (event: IJoystickUpdateEvent) => {
-      if (event.type === "move") {
-        if (event.direction === "FORWARD") {
-          setMovement("FORWARD");
-          console.log(event.direction)
-        } else if (event.direction === "BACKWARD") {
-          setMovement("BACKWARD");
-          console.log(event.direction)
-        } else if (event.direction === "LEFT") {
-          setMovement("LEFT");
-          console.log(event.direction)
-        } else if (event.direction === "RIGHT") {
-          setMovement("RIGHT");
-          console.log(event.direction)
-        }
-      } else if (event.type === "stop") {
-        setMovement(null);
+  // proč tenhle typ? No protože typescript
+  const updateJoystickMove = (event: IJoystickUpdateEvent) => {
+    if (event.type === "move") {
+      if (event.direction === "FORWARD") {
+        setMovement("FORWARD");
+        console.log(event.direction)
+      } else if (event.direction === "BACKWARD") {
+        setMovement("BACKWARD");
+        console.log(event.direction)
+      } else if (event.direction === "LEFT") {
+        setMovement("LEFT");
+        console.log(event.direction)
+      } else if (event.direction === "RIGHT") {
+        setMovement("RIGHT");
+        console.log(event.direction)
       }
-    };
-  }
-
+    } else if (event.type === "stop") {
+      setMovement(null);
+    }
+  };
+  
   // ----- HANDLING KEYBOARD ACTIONS ----- //
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -335,16 +330,30 @@ const Game: React.FC = () => {
               velocityX = (dx / distance) * enemy.speed * slowdownFactor;
               velocityY = (dy / distance) * enemy.speed * slowdownFactor;
             } else {
-              const radius = screenWidth * 0.1;
+              // const radius = screenWidth * 0.1;
               const angle = Math.atan2(dy, dx);
               const circularVelocity = enemy.speed * 0.5;
               velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
               velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
             }
-          }
-          else if (enemy.type === 2) {
+          } else if (enemy.type === 2) {
             velocityX = (dx / distance) * enemy.speed;
             velocityY = (dy / distance) * enemy.speed;
+          } else if (enemy.type === 3) {
+            if (distance > screenWidth * 0.3) {
+              velocityX = (dx / distance) * enemy.speed;
+              velocityY = (dy / distance) * enemy.speed;
+            } else if (distance > screenWidth * 0.2) {
+              const slowdownFactor = ((distance - screenWidth * 0.2) / (screenWidth * 0.1)) + 0.3;
+              velocityX = (dx / distance) * enemy.speed * slowdownFactor;
+              velocityY = (dy / distance) * enemy.speed * slowdownFactor;
+            } else {
+              // const radius = screenWidth * 0.1;
+              const angle = Math.atan2(dy, dx);
+              const circularVelocity = enemy.speed * 0.5;
+              velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
+              velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+            }
           } else {
             velocityX = 0;
             velocityY = 0;
@@ -424,12 +433,10 @@ const Game: React.FC = () => {
     );
 
     missiles.map((missile, index) => {
-
-      
       const dxPlayer = playerPosition.x - missile.position.x + (playerWidth / 2);
       const dyPlayer = playerPosition.y - missile.position.y + (playerHeight / 2);
       const distancePlayer = Math.sqrt(dxPlayer * dxPlayer + dyPlayer * dyPlayer);
-      const collisionPlayer = distancePlayer < 100;
+      const collisionPlayer = distancePlayer < 25;
 
       if (collisionPlayer && missile.isEnemy) {
         dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -missile.damage });
@@ -523,7 +530,7 @@ const Game: React.FC = () => {
           const nonZeroIndexes = array.reduce((acc, num, index) => {
             if (num !== 0) acc.push(index);
             return acc;
-          }, []);
+          }, [] as number[]);
     
           if (nonZeroIndexes.length === 0) {
             console.log("finished");
@@ -543,7 +550,7 @@ const Game: React.FC = () => {
             if (newArray[randomIndex] > 0) {
               newArray[randomIndex]--;
             }
-            setArray(prev => prev = [...newArray]);
+            setArray([...newArray]);
           }
         }
       };
@@ -618,8 +625,9 @@ const Game: React.FC = () => {
         <button onClick={handleResumeClick}>Resume</button>
       )}
       <div className={gameStyle.joystickContainer}>
-        <Joystick move={updateJoystickMove()} stop={updateJoystickMove()} size={100} baseColor="red" stickColor="blue"></Joystick>
+        <Joystick move={updateJoystickMove} stop={updateJoystickMove} size={100} baseColor="red" stickColor="blue" />
       </div>
+
   </div>
   );
 };

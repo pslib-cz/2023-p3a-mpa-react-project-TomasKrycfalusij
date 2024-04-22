@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { allLevels } from '../types/Levels'
 import levelsStyle from './Levels.module.css'
 import { Context } from '../components/ContextProvider';
