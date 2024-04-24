@@ -11,8 +11,7 @@ interface MissileProps {
 const Missile: React.FC<MissileProps> = ({ id, type, position, rotation }) => {
   const missilePositionerClassName = MissileStyle[`missile${type}Positioner`];
   const missileAnimationClassName = MissileStyle[`missile${type}Animation`];
-  console.log(id)
-
+  
   return (
     <div className={missilePositionerClassName} style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) rotate(${rotation}deg)` }}>
       <div className={MissileStyle.missileContainer}>

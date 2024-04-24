@@ -11,6 +11,7 @@ import { Coordinates } from '../types/BasicTypes';
 import { MissileType, missilesSelector } from '../types/MissileTypes';
 import { Joystick } from 'react-joystick-component';
 import { allLevels } from '../types/Levels';
+import { useWindowSize, useEventListener, useClickAnyWhere } from 'usehooks-ts';
 import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';"c:/Users/nestr/OneDrive/Plocha/School/webs/2023-p3a-mpa-react-project-TomasKrycfalusij/my-app/node_modules/react-joystick-component/build/lib/Joystick"
 
 export const spawnMissile = (
@@ -46,25 +47,7 @@ const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
     // ----- OTHER ----- //
 
-    const [screenWidth, setScreenWidth] = useState<number>(window.innerWidth);
-    const [screenHeight, setScreenHeight] = useState<number>(window.innerHeight);
-
-    useEffect(() => {
-      const updateScreenValues = () => {
-        const newScreenHeight = window.innerWidth > 960 ? window.innerHeight : window.innerHeight - 200;
-        setScreenHeight(newScreenHeight);
-        setScreenWidth(window.innerWidth);
-        console.log("change")
-      };
-    
-      updateScreenValues(); // Call once to initialize the state
-    
-      window.addEventListener('resize', updateScreenValues); // Listen for window resize events
-    
-      return () => {
-        window.removeEventListener('resize', updateScreenValues); // Clean up event listener on unmount
-      };
-    }, []); 
+    const { width: screenWidth, height: screenHeight } = useWindowSize();
 
     // const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
     const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
@@ -202,6 +185,34 @@ const Game: React.FC = () => {
   }, [accelerationRate, movement]);
   // ----- HANDLING KEYBOARD ACTIONS ----- //
 
+  
+
+
+  // ----- SPAWNING PLAYER MISSILES ----- //
+  const mouseClick = (e: MouseEvent) => {
+    const dx = e.clientX - (playerPosition.x + playerWidth / 2);
+    const dy = e.clientY - (playerPosition.y + playerHeight / 2);
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const normalizedDx = dx / distance;
+    const normalizedDy = dy / distance;
+  
+    spawnMissile(
+      normalizedDx,
+      normalizedDy,
+      {x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2},
+      playerRotation,
+      2, // Example missile type, replace with desired value
+      false,
+      setMissiles,
+      gamePaused,
+      uuidv4
+    );
+  };
+
+  // ----- SPAWNING PLAYER MISSILES ----- //
+
+  useClickAnyWhere(mouseClick);
+
 
 
   // ----- A L L   T H E   B I G   L O G I C ----- //
@@ -281,32 +292,7 @@ const Game: React.FC = () => {
       );
     };
     // ----- MISSILE POSITION UPDATE ----- //
-    
-
-
-    // ----- SPAWNING PLAYER MISSILES ----- //
-    const mouseClick = (e: MouseEvent) => {
-      const dx = e.clientX - (playerPosition.x + playerWidth / 2);
-      const dy = e.clientY - (playerPosition.y + playerHeight / 2);
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const normalizedDx = dx / distance;
-      const normalizedDy = dy / distance;
-    
-      spawnMissile(
-        normalizedDx,
-        normalizedDy,
-        {x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2},
-        playerRotation,
-        2, // Example missile type, replace with desired value
-        false,
-        setMissiles,
-        gamePaused,
-        uuidv4
-      );
-    };
-
-    // ----- SPAWNING PLAYER MISSILES ----- //
-
+  
 
 
     // ----- MOVING ENEMIES ----- //
@@ -449,7 +435,7 @@ const Game: React.FC = () => {
       }
     });
   };
-// ----- CHECKING COLLISIONS ----- //
+  // ----- CHECKING COLLISIONS ----- //
 
 
     
@@ -464,11 +450,8 @@ const Game: React.FC = () => {
       }
     }, updateRate);
 
-    document.addEventListener('click', mouseClick);
-
     return () => {
-      clearInterval(updateLoop);
-      document.removeEventListener('click', mouseClick);
+      clearInterval(updateLoop)
     };
   }, [gamePaused, acceleration, friction, maxSpeed, playerPosition, velocity, playerWidth, playerHeight, screenHeight]);
   // -----   A L L   T H E   B I G   L O G I C   ----- //
