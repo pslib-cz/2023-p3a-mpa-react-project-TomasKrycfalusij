@@ -74,9 +74,10 @@ const Game: React.FC = () => {
   const [isMoving, setIsMoving] = useState(false);
   const [gamePaused, setGamePaused] = useState(false);
   const [movement, setMovement] = useState<string | null>(null);
+  const [joystickRotationHeld, setJoystickRotationHeld] = useState<boolean>(false);
   // const [player, setPlayer] = useState<playrType[]>([{type: play}])
-
   // ----- MISSILES ----- //
+  const [missileIntervalId, setMissileIntervalId] = useState<number | null>(null);
   const [missiles, setMissiles] = useState<MissileType[]>([])
   
   // ----- BACKGROUND ----- //
@@ -91,7 +92,6 @@ const Game: React.FC = () => {
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
   const [totalEnemiesSpawned, setTotalEnemiesSpawned] = useState<number>(0);
 
-  // proč tenhle typ? No protože typescript
   const updateJoystickMove = (event: IJoystickUpdateEvent) => {
     if (event.type === "move") {
       if (event.direction === "FORWARD") {
@@ -111,6 +111,37 @@ const Game: React.FC = () => {
       setMovement(null);
     }
   };
+
+  const updateJoystickRotate = (event: IJoystickUpdateEvent) => {
+  if (event.type === "move") {
+    setJoystickRotationHeld(true);
+    spawnMissile2(); // Call spawnMissile2 when the joystick is moved
+    if (screenWidth < 960) {
+      const angle = Math.atan2(-Number(event.y), Number(event.x));
+      let rotation = angle * (180 / Math.PI) + 90;
+      setPlayerRotation(rotation);
+    }
+  } else if (event.type === "stop") {
+    setJoystickRotationHeld(false);
+    setMissileIntervalId(null); // Clear the interval when the joystick is stopped
+  }
+}
+
+const spawnMissile2 = () => {
+      spawnMissile(
+        Math.sin(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector x component
+        -Math.cos(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector y component
+        { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
+        playerRotation, // Pass player's rotation angle
+        2, // Example missile type, replace with desired value
+        false,
+        setMissiles,
+        gamePaused,
+        uuidv4
+      );
+}
+
+  
   
   // ----- HANDLING KEYBOARD ACTIONS ----- //
   useEffect(() => {
@@ -190,30 +221,29 @@ const Game: React.FC = () => {
 
   // ----- SPAWNING PLAYER MISSILES ----- //
   const mouseClick = (e: MouseEvent) => {
-    const dx = e.clientX - (playerPosition.x + playerWidth / 2);
-    const dy = e.clientY - (playerPosition.y + playerHeight / 2);
-    const distance = Math.sqrt(dx * dx + dy * dy);
-    const normalizedDx = dx / distance;
-    const normalizedDy = dy / distance;
-  
-    spawnMissile(
-      normalizedDx,
-      normalizedDy,
-      {x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2},
-      playerRotation,
-      2, // Example missile type, replace with desired value
-      false,
-      setMissiles,
-      gamePaused,
-      uuidv4
-    );
+    if (screenWidth >= 960 && !joystickRotationHeld) {
+      const dx = e.clientX - (playerPosition.x + playerWidth / 2);
+      const dy = e.clientY - (playerPosition.y + playerHeight / 2);
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const normalizedDx = dx / distance;
+      const normalizedDy = dy / distance;
+    
+      spawnMissile(
+        normalizedDx,
+        normalizedDy,
+        {x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2},
+        playerRotation,
+        2, // Example missile type, replace with desired value
+        false,
+        setMissiles,
+        gamePaused,
+        uuidv4
+      );
+    }
   };
-
   // ----- SPAWNING PLAYER MISSILES ----- //
 
   useClickAnyWhere(mouseClick);
-
-
 
   // ----- A L L   T H E   B I G   L O G I C ----- //
   useEffect(() => {
@@ -459,7 +489,7 @@ const Game: React.FC = () => {
 
   // ----- ROTATING PLAYER ----- //
   useEffect(() => {
-    if (!gamePaused) {
+    if (!gamePaused && screenWidth >= 960) {
       const handleMouseMove = (event: MouseEvent) => {
         setMousePosition({ x: event.clientX, y: event.clientY });
       };
@@ -473,7 +503,7 @@ const Game: React.FC = () => {
   }, [gamePaused]);
 
   useEffect(() => {
-    if (!gamePaused) {
+    if (!gamePaused && screenWidth >= 960) {
       const playerCenterX = playerPosition.x + playerWidth / 2;
       const playerCenterY = playerPosition.y + playerHeight / 2;
       const dx = mousePosition.x - playerCenterX;
@@ -607,10 +637,12 @@ const Game: React.FC = () => {
       {gamePaused && (
         <button onClick={handleResumeClick}>Resume</button>
       )}
-      <div className={gameStyle.joystickContainer}>
+      <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketMovement}`}>
         <Joystick move={updateJoystickMove} stop={updateJoystickMove} size={100} baseColor="red" stickColor="blue" />
       </div>
-
+      <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketRotation}`}>
+        <Joystick move={updateJoystickRotate} stop={updateJoystickRotate} size={100} baseColor="red" stickColor="blue" />
+      </div>
   </div>
   );
 };

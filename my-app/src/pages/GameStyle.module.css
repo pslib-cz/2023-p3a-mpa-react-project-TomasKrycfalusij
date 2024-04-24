@@ -28,11 +28,21 @@
 .joystickContainer {
     position: fixed;
     bottom: 30px;
-    left: 50%;
     transform: translateX(-50%);
     z-index: 99;
     display: block;
 }
+
+.joystickRocketMovement {
+    left: 30%;
+    transform: translateX(-50%);
+}
+
+.joystickRocketRotation {
+    right: 30%;
+    transform: translateX(50%);
+}
+
 
 @media screen and (min-width: 960px) {
     .joystickContainer {
