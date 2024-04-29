@@ -11,7 +11,7 @@ import { Coordinates } from '../types/BasicTypes';
 import { MissileType, missilesSelector } from '../types/MissileTypes';
 import { Joystick } from 'react-joystick-component';
 import { allLevels } from '../types/Levels';
-import { useWindowSize, useEventListener, useClickAnyWhere } from 'usehooks-ts';
+import { useWindowSize, useClickAnyWhere } from 'usehooks-ts';
 import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';"c:/Users/nestr/OneDrive/Plocha/School/webs/2023-p3a-mpa-react-project-TomasKrycfalusij/my-app/node_modules/react-joystick-component/build/lib/Joystick"
 
 export const spawnMissile = (
@@ -80,7 +80,7 @@ const Game: React.FC = () => {
   const [recharged, setRecharged] = useState<boolean>(true);
   const [lastShotTime, setLastShotTime] = useState<number>(0);
   const shootingInterval: number = 500;
-  const [missileIntervalId, setMissileIntervalId] = useState<number | null>(null);
+  // const [missileIntervalId, setMissileIntervalId] = useState<number | null>(null);
   const [missiles, setMissiles] = useState<MissileType[]>([])
   
   // ----- BACKGROUND ----- //
@@ -630,7 +630,7 @@ if (recharged && joystickRotationHeld) {
       </div>
       <button onClick={() => dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 })}>Add Money</button>
       {missiles.map((missile) => (
-          <Missile key={missile.key} id={missile.id} type={missile.type} position={missile.position} rotation={missile.rotation}/>
+          <Missile key={missile.key} type={missile.type} position={missile.position} rotation={missile.rotation}/>
       ))}
       <Player position={playerPosition} width={playerWidth} height={playerWidth} rotation={playerRotation} moving={isMoving} />
       {enemies.map((enemy) => (

@@ -2,13 +2,12 @@ import React from 'react';
 import MissileStyle from "./MissileStyle.module.css";
 
 interface MissileProps {
-  id: number;
   type: number;
   position: { x: number; y: number };
   rotation: number;
 }
 
-const Missile: React.FC<MissileProps> = ({ id, type, position, rotation }) => {
+const Missile: React.FC<MissileProps> = ({ type, position, rotation }) => {
   const missilePositionerClassName = MissileStyle[`missile${type}Positioner`];
   const missileAnimationClassName = MissileStyle[`missile${type}Animation`];
   
