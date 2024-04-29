@@ -45,9 +45,24 @@ export const spawnMissile = (
 
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
+  const [mobile, setMobile] = useState(false);
     // ----- OTHER ----- //
 
-    const { width: screenWidth, height: screenHeight } = useWindowSize();
+  const { width: screenWidthReal, height: screenHeightReal } = useWindowSize();
+
+  const [screenWidth, setScreenWidth] = useState(screenWidthReal)
+  const [screenHeight, setScreenHeight] = useState(screenHeightReal);
+
+  useEffect(() => {
+    if (screenWidthReal <= 960) {
+      setScreenHeight(screenHeightReal - 200);
+      setMobile(true);
+    }
+    else {
+      setScreenHeight(screenHeightReal);
+      setMobile(false);
+    }
+  }, [screenWidthReal, screenHeightReal])
 
     // const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
     const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
@@ -79,7 +94,7 @@ const Game: React.FC = () => {
   // ----- MISSILES ----- //
   const [recharged, setRecharged] = useState<boolean>(true);
   const [lastShotTime, setLastShotTime] = useState<number>(0);
-  const shootingInterval: number = 500;
+  const shootingInterval: number = 1000;
   // const [missileIntervalId, setMissileIntervalId] = useState<number | null>(null);
   const [missiles, setMissiles] = useState<MissileType[]>([])
   
@@ -115,53 +130,53 @@ const Game: React.FC = () => {
     }
   };
 
-  // Recharge the missile shooting after 2 seconds
-useEffect(() => {
-  if (!recharged) {
-    const timeoutId = setTimeout(() => {
-      setRecharged(true);
-    }, 500);
-    return () => clearTimeout(timeoutId);
-  }
-}, [recharged]);
+  const [shootNow, setShootNow] = useState<boolean>(false);
+
+  useEffect(() => {
+    let timeoutId: any;
+      timeoutId = setInterval(() => {
+        if (mobile) {
+        setShootNow(prev => !prev);
+        }
+      }, shootingInterval);
+    return () => {
+      if (timeoutId && mobile) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [mobile]);
+
+  useEffect(() => {
+    spawnMissileFunc();
+  }, [shootNow])
 
 
-const updateJoystickRotate = (event: IJoystickUpdateEvent) => {
-  if (event.type === "move") {
-    setJoystickRotationHeld(true);
-    if (screenWidth < 960) {
-      const angle = Math.atan2(-Number(event.y), Number(event.x));
-      let rotation = angle * (180 / Math.PI) + 90;
-      setPlayerRotation(rotation);
-
+  const updateJoystickRotate = (event: IJoystickUpdateEvent) => {
+    if (event.type === "move") {
+      setJoystickRotationHeld(true);
+      if (screenWidth < 960) {
+        const angle = Math.atan2(-Number(event.y), Number(event.x));
+        let rotation = angle * (180 / Math.PI) + 90;
+        setPlayerRotation(rotation);
+      }
+    } else if (event.type === "stop") {
+      setJoystickRotationHeld(false);
     }
-  } else if (event.type === "stop") {
-    setJoystickRotationHeld(false);
   }
-}
 
-const spawnMissile2 = () => {
-  console.log("Shooting missile");
-  const currentTime = Date.now();
-  if (currentTime - lastShotTime >= shootingInterval) {
-    spawnMissile(
-      Math.sin(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector x component
-      -Math.cos(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector y component
-      { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
-      playerRotation, // Pass player's rotation angle
-      2, // Example missile type, replace with desired value
-      false,
-      setMissiles,
-      gamePaused,
-      uuidv4
-    );
-    setLastShotTime(currentTime);
+  const spawnMissileFunc = () => {
+      spawnMissile(
+        Math.sin(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector x component
+        -Math.cos(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector y component
+        { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
+        playerRotation, // Pass player's rotation angle
+        2, // Example missile type, replace with desired value
+        false,
+        setMissiles,
+        gamePaused,
+        uuidv4
+      );
   }
-}
-
-if (recharged && joystickRotationHeld) {
-  spawnMissile2();
-}
   
   // ----- HANDLING KEYBOARD ACTIONS ----- //
   useEffect(() => {
