@@ -5,6 +5,7 @@ import { spawnMissile } from '../pages/Game';
 
 interface EnemyProps {
   id: string;
+  scale: number;
   position: { x: number; y: number };
   type: number;
   rotation: number;
@@ -19,6 +20,7 @@ interface EnemyProps {
 
 const Enemy: React.FC<EnemyProps> = ({
   id,
+  scale,
   position,
   type,
   rotation,
@@ -61,6 +63,7 @@ const Enemy: React.FC<EnemyProps> = ({
       true,
       setMissiles,
       gamePaused,
+      scale,
       uuidv4
     );
   };
@@ -75,7 +78,7 @@ const Enemy: React.FC<EnemyProps> = ({
   }, [gamePaused]);
 
   return (
-    <div key={id} className={enemyStyle.enemyPositioner} style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) rotate(${rotation}deg)` }}>
+    <div key={id} className={enemyStyle.enemyPositioner} style={{ left: position.x, top: position.y, transform: `translate(-50%, -50%) rotate(${rotation}deg)`, width: 50 * scale, height: 50 * scale }}>
       <div className={enemyStyle.enemyContainer}>
         <div className={enemyStyle.enemy} style={{backgroundImage: `url("${texture}")`}}></div>
         <div className={enemyStyle.enemyHealthbar} style={{width: `${health / maxHealth * 100}%`}}></div>

@@ -23,14 +23,15 @@ export const spawnMissile = (
   fromEnemy: boolean,
   setMissiles: React.Dispatch<React.SetStateAction<MissileType[]>>,
   gamePaused: boolean,
+  scale: number,
   uuidv4: () => string
 ) => {
   if (!gamePaused) {
     const selectedMissile = missilesSelector.find(missile => missile.type === missileType) || missilesSelector[0];
-
     const newMissile: MissileType = {
       ...selectedMissile,
       id: 1,
+      scale: scale,
       isEnemy: fromEnemy,
       position: { x: objectPosition.x, y: objectPosition.y },
       velocityX: normalizedDx * selectedMissile.speed,
@@ -46,21 +47,25 @@ export const spawnMissile = (
 const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
   const [mobile, setMobile] = useState(false);
+  const [autoshoot, setAutoshoot] = useState(false);
     // ----- OTHER ----- //
 
   const { width: screenWidthReal, height: screenHeightReal } = useWindowSize();
+  const [scale, setScale] = useState<number>(1);
 
-  const [screenWidth, setScreenWidth] = useState(screenWidthReal)
-  const [screenHeight, setScreenHeight] = useState(screenHeightReal);
+  const [screenWidth, setScreenWidth] = useState<number>(screenWidthReal)
+  const [screenHeight, setScreenHeight] = useState<number>(screenHeightReal);
 
   useEffect(() => {
     if (screenWidthReal <= 960) {
       setScreenHeight(screenHeightReal - 200);
       setMobile(true);
+      setScale(0.8);
     }
     else {
       setScreenHeight(screenHeightReal);
       setMobile(false);
+      setScale(1);
     }
   }, [screenWidthReal, screenHeightReal])
 
@@ -81,9 +86,9 @@ const Game: React.FC = () => {
   // const [accelerationRate, setAccelerationRate] = useState<number>(0.02);
   const friction: number = 0.02
   // const [friction, setFriction] = useState<number>(0.02);
-  const playerWidth: number = 60
+  const playerWidth: number = 60 * scale;
   // const [playerWidth, setPlayerWidth] = useState<number>(60);
-  const playerHeight: number = 60
+  const playerHeight: number = 60 * scale;
   // const [playerHeight, setPlayerHeight] = useState<number>(60);
   const [acceleration, setAcceleration] = useState<Coordinates>({ x: 0, y: 0 });
   const [isMoving, setIsMoving] = useState(false);
@@ -133,21 +138,35 @@ const Game: React.FC = () => {
   const [shootNow, setShootNow] = useState<boolean>(false);
 
   useEffect(() => {
-    let timeoutId: any;
+    let timeoutId: number;
       timeoutId = setInterval(() => {
-        if (mobile) {
-        setShootNow(prev => !prev);
+        if (mobile || autoshoot) {
+          setRecharged(true)
+          setShootNow(prev => !prev);
         }
       }, shootingInterval);
     return () => {
-      if (timeoutId && mobile) {
+      if (timeoutId && (mobile || autoshoot)) {
         clearTimeout(timeoutId);
       }
     };
-  }, [mobile]);
+  }, [mobile, autoshoot]);
 
   useEffect(() => {
-    spawnMissileFunc();
+    let timeoutRechargeId: number;
+    if (recharged) {
+      spawnMissileFunc();
+      setRecharged(false);
+      timeoutRechargeId = setInterval(() => {
+        setRecharged(true);
+        console.log("recharged")
+      }, shootingInterval);
+    }
+    return () => {
+      if (timeoutRechargeId) {
+        clearTimeout(timeoutRechargeId);
+      }
+    };
   }, [shootNow])
 
 
@@ -174,6 +193,7 @@ const Game: React.FC = () => {
         false,
         setMissiles,
         gamePaused,
+        scale,
         uuidv4
       );
   }
@@ -256,7 +276,9 @@ const Game: React.FC = () => {
 
   // ----- SPAWNING PLAYER MISSILES ----- //
   const mouseClick = (e: MouseEvent) => {
-    if (screenWidth >= 960 && !joystickRotationHeld) {
+    if (screenWidth >= 960 && !joystickRotationHeld && recharged) {
+      setShootNow(prev => !prev);
+      /*
       const dx = e.clientX - (playerPosition.x + playerWidth / 2);
       const dy = e.clientY - (playerPosition.y + playerHeight / 2);
       const distance = Math.sqrt(dx * dx + dy * dy);
@@ -272,8 +294,10 @@ const Game: React.FC = () => {
         false,
         setMissiles,
         gamePaused,
+        scale,
         uuidv4
       );
+      */
     }
   };
   // ----- SPAWNING PLAYER MISSILES ----- //
@@ -652,6 +676,7 @@ const Game: React.FC = () => {
         <Enemy
           key={enemy.id}
           id={enemy.id}
+          scale={scale}
           type={enemy.type}
           position={enemy.position}
           rotation={enemy.rotation}

@@ -2,6 +2,7 @@ import { Coordinates } from './BasicTypes';
 
 export interface MissileType {
   id: number;
+  scale: number;
   type: number;
   speed: number;
   isEnemy: boolean;
@@ -18,6 +19,7 @@ export interface MissileType {
 export const missilesSelector: MissileType[] = [
   {
     id: 0,
+    scale: 1,
     type: 1,
     speed: 3,
     isEnemy: false,
@@ -32,6 +34,7 @@ export const missilesSelector: MissileType[] = [
   },
   {
     id: 1,
+    scale: 1,
     type: 2,
     speed: 5,
     isEnemy: false,
