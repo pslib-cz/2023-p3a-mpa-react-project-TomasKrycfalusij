@@ -66,10 +66,11 @@ export interface PlayerInfo {
     type: ActionType.UPDATE_GAME_LEVEL_REACHED;
     payload: number;
   }
+
   export type Action =
     | UpdateMoneyAction
     | UpdateLevelAction
     | UpdatePlayerHealthAction
     | UpdateUpgradeAction
-    | UpdateGameLevelReached;
+    | UpdateGameLevelReached
   

@@ -12,6 +12,7 @@ import { MissileType, missilesSelector } from '../types/MissileTypes';
 import { Joystick } from 'react-joystick-component';
 import { allLevels } from '../types/Levels';
 import { useWindowSize, useClickAnyWhere } from 'usehooks-ts';
+import LevelCompleted from '../components/LevelCompleted';
 import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';"c:/Users/nestr/OneDrive/Plocha/School/webs/2023-p3a-mpa-react-project-TomasKrycfalusij/my-app/node_modules/react-joystick-component/build/lib/Joystick"
 
 export const spawnMissile = (
@@ -48,7 +49,8 @@ const Game: React.FC = () => {
   const { playerStats, dispatch } = useContext(Context);
   const [mobile, setMobile] = useState(false);
   const [autoshoot, setAutoshoot] = useState(false);
-    // ----- OTHER ----- //
+  const [showFinishedLevelMenu, setShowFinishedLevelMenu] = useState(false);
+  // ----- OTHER ----- //
 
   const { width: screenWidthReal, height: screenHeightReal } = useWindowSize();
   const [scale, setScale] = useState<number>(1);
@@ -69,8 +71,8 @@ const Game: React.FC = () => {
     }
   }, [screenWidthReal, screenHeightReal])
 
-    // const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
-    const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
+  // const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
+  const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
 
   // ----- PLAYER ----- //
   const [playerPosition, setPlayerPosition] = useState<Coordinates>({
@@ -639,9 +641,10 @@ const Game: React.FC = () => {
   // ----- LEVEL COMPLETION ----- //
 
   useEffect(() => {
-        if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
-      console.log("Level completed")
-
+    if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
+      setGamePaused(true)
+      setShowFinishedLevelMenu(true)
+      dispatch({ type: ActionType.UPDATE_GAME_LEVEL_REACHED, payload: playerStats.level + 1 });
     }
   }, [enemiesKilled, playerStats.level]);
   // ----- LEVEL COMPLETION ----- //
@@ -703,6 +706,12 @@ const Game: React.FC = () => {
       <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketRotation}`}>
         <Joystick move={updateJoystickRotate} stop={updateJoystickRotate} size={100} baseColor="red" stickColor="blue" />
       </div>
+      {
+        showFinishedLevelMenu ?
+        <LevelCompleted />
+        :
+        null
+      }
   </div>
   );
 };

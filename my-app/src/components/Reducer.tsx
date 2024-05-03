@@ -1,4 +1,4 @@
-import { Reducer } from 'react';
+import { Reducer, useEffect } from 'react';
 import { State, Action, ActionType } from '../types/ReducerTypes';
 import { Upgrade } from '../types/ReducerTypes';
 
@@ -64,8 +64,7 @@ export const initialState: State = {
   upgrades: initialUpgrades,
 };
 
-// Define the reducer function
-const reducer: Reducer<State, Action> = (state = initialState, action) => {
+const reducer: Reducer<State, Action> = (state, action) => {
   switch (action.type) {
     case ActionType.UPDATE_MONEY:
       return {
@@ -93,15 +92,15 @@ const reducer: Reducer<State, Action> = (state = initialState, action) => {
     case ActionType.UPDATE_LEVEL:
         return {
           ...state,
+          health: 10,
           level: action.payload,
         };
     case ActionType.UPDATE_GAME_LEVEL_REACHED:
       return {
         ...state,
+        health: 10,
         gameLevelReached: action.payload,
       }
-    default:
-      return state;
   }
 };
 

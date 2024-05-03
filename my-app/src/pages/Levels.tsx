@@ -15,9 +15,9 @@ const Levels = () => {
         {allLevels.map((level, index) => (
           <Link
             key={index}
-            to={playerStats.level >= level.level ? "/game" : "#"} // Specify the link destination based on the condition
+            to={playerStats.gameLevelReached >= level.level ? "/game" : "#"} // Specify the link destination based on the condition
             onClick={() => {
-              if (playerStats.level >= level.level) {
+              if (playerStats.gameLevelReached >= level.level) {
                 dispatch({ type: ActionType.UPDATE_LEVEL, payload: level.level });
               }
             }}
