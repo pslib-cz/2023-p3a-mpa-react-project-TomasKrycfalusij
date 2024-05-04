@@ -60,7 +60,7 @@ export const initialState: State = {
   money: 0,
   health: 10,
   level: 1,
-  gameLevelReached: 1,
+  gameLevelReached: 6,
   upgrades: initialUpgrades,
 };
 

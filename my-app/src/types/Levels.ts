@@ -10,7 +10,7 @@ export const allLevels: LevelType[] = [
     },
     {
         level: 2,
-        enemies: [3, 2]
+        enemies: [1, 1]
     },
     {
         level: 3,
@@ -18,23 +18,23 @@ export const allLevels: LevelType[] = [
     },
     {
         level: 4,
-        enemies: [4, 7, 3]
+        enemies: [0, 0, 2]
     },
     {
         level: 5,
-        enemies: [8]
+        enemies: [2, 5, 3, 5]
     },
     {
         level: 6,
-        enemies: [9]
+        enemies: [1, 1, 1, 1]
     },
     {
         level: 7,
-        enemies: [10]
+        enemies: [1, 1, 1, 1, 1]
     },
     {
         level: 8,
-        enemies: [11]
+        enemies: [1, 1, 1, 1, 1]
     },
     {
         level: 9,

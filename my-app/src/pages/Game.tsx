@@ -121,16 +121,12 @@ const Game: React.FC = () => {
     if (event.type === "move") {
       if (event.direction === "FORWARD") {
         setMovement("FORWARD");
-        console.log(event.direction)
       } else if (event.direction === "BACKWARD") {
         setMovement("BACKWARD");
-        console.log(event.direction)
       } else if (event.direction === "LEFT") {
         setMovement("LEFT");
-        console.log(event.direction)
       } else if (event.direction === "RIGHT") {
         setMovement("RIGHT");
-        console.log(event.direction)
       }
     } else if (event.type === "stop") {
       setMovement(null);
@@ -280,26 +276,6 @@ const Game: React.FC = () => {
   const mouseClick = (e: MouseEvent) => {
     if (screenWidth >= 960 && !joystickRotationHeld && recharged) {
       setShootNow(prev => !prev);
-      /*
-      const dx = e.clientX - (playerPosition.x + playerWidth / 2);
-      const dy = e.clientY - (playerPosition.y + playerHeight / 2);
-      const distance = Math.sqrt(dx * dx + dy * dy);
-      const normalizedDx = dx / distance;
-      const normalizedDy = dy / distance;
-    
-      spawnMissile(
-        normalizedDx,
-        normalizedDy,
-        {x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2},
-        playerRotation,
-        2, // Example missile type, replace with desired value
-        false,
-        setMissiles,
-        gamePaused,
-        scale,
-        uuidv4
-      );
-      */
     }
   };
   // ----- SPAWNING PLAYER MISSILES ----- //
@@ -407,11 +383,20 @@ const Game: React.FC = () => {
               velocityX = (dx / distance) * enemy.speed * slowdownFactor;
               velocityY = (dy / distance) * enemy.speed * slowdownFactor;
             } else {
-              // const radius = screenWidth * 0.1;
-              const angle = Math.atan2(dy, dx);
-              const circularVelocity = enemy.speed * 0.5;
-              velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
-              velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+              const hitsBorder =
+              enemy.position.x < 0 + enemy.width / 2 ||
+              enemy.position.x > screenWidth - enemy.width / 2 ||
+              enemy.position.y < 0 + enemy.height / 2 ||
+              enemy.position.y > screenHeight - enemy.height / 2;
+              if (!hitsBorder) {
+                const angle = Math.atan2(dy, dx);
+                const circularVelocity = enemy.speed * 0.5;
+                velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
+                velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+              } else {
+                velocityX = 0;
+                velocityY = 0;
+              }
             }
           } else if (enemy.type === 2) {
             velocityX = (dx / distance) * enemy.speed;
@@ -425,16 +410,49 @@ const Game: React.FC = () => {
               velocityX = (dx / distance) * enemy.speed * slowdownFactor;
               velocityY = (dy / distance) * enemy.speed * slowdownFactor;
             } else {
-              // const radius = screenWidth * 0.1;
-              const angle = Math.atan2(dy, dx);
-              const circularVelocity = enemy.speed * 0.5;
-              velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
-              velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+              const hitsBorder =
+              enemy.position.x < 0 + enemy.width / 2 ||
+              enemy.position.x > screenWidth - enemy.width / 2 ||
+              enemy.position.y < 0 + enemy.height / 2 ||
+              enemy.position.y > screenHeight - enemy.height / 2;
+              if (!hitsBorder) {
+                const angle = Math.atan2(dy, dx);
+                const circularVelocity = enemy.speed * 0.5;
+                velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
+                velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+              } else {
+                velocityX = 0;
+                velocityY = 0;
+              }
             }
-          } else {
-            velocityX = 0;
-            velocityY = 0;
-          }
+          } else if (enemy.type === 4) {
+            if (distance > screenWidth * 0.3) {
+              velocityX = (dx / distance) * enemy.speed;
+              velocityY = (dy / distance) * enemy.speed;
+            } else if (distance > screenWidth * 0.2) {
+              const slowdownFactor = ((distance - screenWidth * 0.2) / (screenWidth * 0.1)) + 0.3;
+              velocityX = (dx / distance) * enemy.speed * slowdownFactor;
+              velocityY = (dy / distance) * enemy.speed * slowdownFactor;
+            } else {
+              const hitsBorder =
+              enemy.position.x < 0 + enemy.width / 2 ||
+              enemy.position.x > screenWidth - enemy.width / 2 ||
+              enemy.position.y < 0 + enemy.height / 2 ||
+              enemy.position.y > screenHeight - enemy.height / 2;
+              if (!hitsBorder) {
+                const angle = Math.atan2(dy, dx);
+                const circularVelocity = enemy.speed * 0.5;
+                velocityX = circularVelocity * Math.cos(angle - Math.PI / 2);
+                velocityY = circularVelocity * Math.sin(angle - Math.PI / 2);
+              } else {
+                velocityX = 0;
+                velocityY = 0;
+              }
+            }
+            } else {
+              velocityX = 0;
+              velocityY = 0;
+            }
 
           const rotation = (Math.atan2(dy, dx) * (180 / Math.PI)) + 90;
 
@@ -497,7 +515,7 @@ const Game: React.FC = () => {
 
         if (hitPlayer && !enemiesKilled.get(updatedEnemy.id)) {
           setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
-          dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -1 }); // here is the error
+          dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -1 });
         }
 
         if (!hitPlayer && updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
@@ -527,8 +545,6 @@ const Game: React.FC = () => {
     });
   };
   // ----- CHECKING COLLISIONS ----- //
-
-
     
 
     const updateLoop = setInterval(() => {
@@ -607,7 +623,6 @@ const Game: React.FC = () => {
           }, [] as number[]);
     
           if (nonZeroIndexes.length === 0) {
-            console.log("finished");
             return
           } else {
             const randomIndex = nonZeroIndexes[Math.floor(Math.random() * nonZeroIndexes.length)];
@@ -644,7 +659,9 @@ const Game: React.FC = () => {
     if (enemiesKilled.size === allLevels[playerStats.level - 1].enemies.reduce((sum, enemy) => sum + enemy, 0)) {
       setGamePaused(true)
       setShowFinishedLevelMenu(true)
-      dispatch({ type: ActionType.UPDATE_GAME_LEVEL_REACHED, payload: playerStats.level + 1 });
+      if (playerStats.level >= playerStats.gameLevelReached) {
+        dispatch({ type: ActionType.UPDATE_GAME_LEVEL_REACHED, payload: playerStats.level + 1 });
+      }
     }
   }, [enemiesKilled, playerStats.level]);
   // ----- LEVEL COMPLETION ----- //
@@ -695,8 +712,6 @@ const Game: React.FC = () => {
             {!gamePaused && (
         <button onClick={handlePauseClick}>Pause</button>
       )}
-
-      {/* Button to resume the game */}
       {gamePaused && (
         <button onClick={handleResumeClick}>Resume</button>
       )}
