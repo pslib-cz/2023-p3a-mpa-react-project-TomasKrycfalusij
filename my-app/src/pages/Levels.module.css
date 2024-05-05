@@ -1,14 +1,29 @@
+.pageContainer {
+    text-align: center;
+}
+
 .levelsList {
     display: flex;
+    flex-direction: column;
     flex-wrap: wrap;
     justify-content: center;
     gap: 1em;
-
+    width: 20em;
+    margin: auto;
 }
 
 .singleLevel {
-    padding: 1em;
-    background-color: gray;
+    padding: 0.5em 1em;
+    background-color: var(--dark-gray);
+    display: flex;
+    align-items: center;
+    border-radius: 2em;
+}
+
+.singleLevel p {
+    text-decoration: none;
+    color: var(--text-color);
+    user-select: none;
 }
 
 .notReached {
@@ -16,5 +31,19 @@
 }
 
 .reached {
-    background-color: green;
+    background-color: var(--dark-gray);
+    transition-duration: 0.3s;
+}
+
+.reached:hover {
+    background-color: var(--very-dark-gray);
+}
+
+.lockImage {
+    width: 20px;
+    height: 20px;
+    object-fit: cover;
+    fill: var(--text-color);
+    margin-right: 1em;
+    user-select: none;
 }

@@ -4,12 +4,14 @@ import levelsStyle from './Levels.module.css'
 import { Context } from '../components/ContextProvider';
 import { Link } from 'react-router-dom';
 import { ActionType } from '../types/ReducerTypes';
+import unlocked from '../assets/Icons/unlocked.svg'
+import locked from '../assets/Icons/locked.svg'
 
 const Levels = () => {
   const { playerStats, dispatch } = useContext(Context);
 
   return (
-    <div>
+    <div className={levelsStyle.pageContainer}>
       <h1>LEVELS</h1>
       <div className={levelsStyle.levelsList}>
         {allLevels.map((level, index) => (
@@ -27,7 +29,12 @@ const Levels = () => {
                 : levelsStyle.notReached
             }`}
           >
-            <h2>Level {level.level}</h2>
+          {
+            playerStats.gameLevelReached >= level.level ?
+            <img className={levelsStyle.lockImage} src={unlocked} alt="unlocked" />
+            : <img className={levelsStyle.lockImage} src={locked} alt="locked" />
+          }
+            <p>Level {level.level}</p>
           </Link>
         ))}
       </div>

@@ -66,7 +66,7 @@ export const missilesSelector: MissileType[] = [
     id: 3,
     scale: 1,
     type: 4,
-    speed: 2,
+    speed: 2.5,
     isEnemy: false,
     position: { x: 0, y: 0 },
     velocityX: 0,

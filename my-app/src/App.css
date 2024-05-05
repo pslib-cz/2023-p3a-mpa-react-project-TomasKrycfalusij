@@ -1,5 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
+:root {
+    --dark-gray: #282c34;
+    --very-dark-gray: #1c1e24;
+    --text-color: #f0f0f0;
+
+}
+
 html {
     color: white;
     font-family: "Bebas Neue", sans-serif;

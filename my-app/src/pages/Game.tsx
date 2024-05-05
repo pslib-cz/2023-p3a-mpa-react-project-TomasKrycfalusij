@@ -50,6 +50,11 @@ const Game: React.FC = () => {
   const [mobile, setMobile] = useState(false);
   const [autoshoot, setAutoshoot] = useState(false);
   const [showFinishedLevelMenu, setShowFinishedLevelMenu] = useState(false);
+  
+  useEffect(() => { 
+    playerStats.health = 10;
+    localStorage.setItem("playerStats", JSON.stringify(playerStats));
+  }, [])
   // ----- OTHER ----- //
 
   const { width: screenWidthReal, height: screenHeightReal } = useWindowSize();
@@ -136,7 +141,7 @@ const Game: React.FC = () => {
   const [shootNow, setShootNow] = useState<boolean>(false);
 
   useEffect(() => {
-    let timeoutId: number;
+    let timeoutId: any;
       timeoutId = setInterval(() => {
         if (mobile || autoshoot) {
           setRecharged(true)
@@ -151,7 +156,7 @@ const Game: React.FC = () => {
   }, [mobile, autoshoot]);
 
   useEffect(() => {
-    let timeoutRechargeId: number;
+    let timeoutRechargeId: any;
     if (recharged) {
       spawnMissileFunc();
       setRecharged(false);

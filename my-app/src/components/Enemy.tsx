@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import enemyStyle from './EnemyStyle.module.css';
+import enemyStyle from './Enemy.module.css';
 import { MissileType } from '../types/MissileTypes';
 import { spawnMissile } from '../pages/Game';
 import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
