@@ -46,5 +46,20 @@ export const missilesSelector: MissileType[] = [
     collisions: 1,
     damage: 2,
     key: '',
+  },
+  {
+    id: 2,
+    scale: 1,
+    type: 3,
+    speed: 3,
+    isEnemy: false,
+    position: { x: 0, y: 0 },
+    velocityX: 0,
+    velocityY: 0,
+    remove: false,
+    rotation: 0,
+    collisions: 1,
+    damage: 1,
+    key: '',
   }
 ];

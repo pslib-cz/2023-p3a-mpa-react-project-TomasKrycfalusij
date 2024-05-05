@@ -4,6 +4,7 @@ import ContextProvider from './components/ContextProvider';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Updated import statements
 import MainMenu from './pages/MainMenu';
 import Levels from './pages/Levels';
+import Shop from './pages/Shop';
 
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
                     <Route path="/" element={<MainMenu />} />
                     <Route path="/game" element={<Game />} />
                     <Route path="/levels" element={<Levels />} />
+                    <Route path="/shop" element={<Shop />} />
                 </Routes>
             </Router>
         </ContextProvider>

@@ -31,6 +31,7 @@ const Levels = () => {
           </Link>
         ))}
       </div>
+      <Link to="/shop">Go to Shop</Link>
     </div>
   )
 }

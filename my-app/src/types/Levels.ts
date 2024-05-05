@@ -26,7 +26,7 @@ export const allLevels: LevelType[] = [
     },
     {
         level: 6,
-        enemies: [1, 1, 1, 1]
+        enemies: [0, 0, 0, 2]
     },
     {
         level: 7,
