@@ -91,7 +91,7 @@ export const enemiesSelector: EnemyType[] = [
     health: 10,
     speed: 0.3,
     reward: 30,
-    missileType: 3,
+    missileType: 2,
     missileFrequency: 3000,
     name: "Střelec",
     description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",

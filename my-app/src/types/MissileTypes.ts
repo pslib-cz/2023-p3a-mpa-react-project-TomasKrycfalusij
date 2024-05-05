@@ -36,7 +36,7 @@ export const missilesSelector: MissileType[] = [
     id: 1,
     scale: 1,
     type: 2,
-    speed: 5,
+    speed: 3,
     isEnemy: false,
     position: { x: 0, y: 0 },
     velocityX: 0,
@@ -51,7 +51,7 @@ export const missilesSelector: MissileType[] = [
     id: 2,
     scale: 1,
     type: 3,
-    speed: 3,
+    speed: 5,
     isEnemy: false,
     position: { x: 0, y: 0 },
     velocityX: 0,
@@ -59,7 +59,7 @@ export const missilesSelector: MissileType[] = [
     remove: false,
     rotation: 0,
     collisions: 1,
-    damage: 1,
+    damage: 3,
     key: '',
   },
   {
@@ -74,7 +74,7 @@ export const missilesSelector: MissileType[] = [
     remove: false,
     rotation: 0,
     collisions: 1,
-    damage: 2,
+    damage: 3,
     key: '',
   }
 ];

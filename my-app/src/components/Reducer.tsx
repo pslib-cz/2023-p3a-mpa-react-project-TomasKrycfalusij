@@ -23,14 +23,14 @@ const initialUpgrades: Upgrade[] = [
     owned: false
   },
   {
-    name: "Triple missiles",
-    cost: 50,
+    name: "Even better missiles",
+    cost: 60,
     type: "missile",
     owned: false
   },
   {
-    name: "Even better missiles",
-    cost: 60,
+    name: "Triple missiles",
+    cost: 50,
     type: "missile",
     owned: false
   },
@@ -55,7 +55,7 @@ export const initialState: State = {
   money: 500,
   health: 10,
   level: 1,
-  gameLevelReached: 1,
+  gameLevelReached: 7,
   upgrades: initialUpgrades,
 };
 

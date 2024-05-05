@@ -87,12 +87,10 @@ const Game: React.FC = () => {
   const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
   const [playerRotation, setPlayerRotation] = useState<number>(0);
   const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
-  const maxSpeed: number = 2
-  // const [maxSpeed, setMaxSpeed] = useState<number>(2);
-  const accelerationRate: number = 0.02
-  // const [accelerationRate, setAccelerationRate] = useState<number>(0.02);
-  const friction: number = 0.02
-  // const [friction, setFriction] = useState<number>(0.02);
+  const [killed, setKilled] = useState<boolean>(false);
+  const [maxSpeed, setMaxSpeed] = useState<number>(1);
+  const [accelerationRate, setAccelerationRate] = useState<number>(0.01);
+  const [friction, setFriction] = useState<number>(0.02);
   const playerWidth: number = 60 * scale;
   // const [playerWidth, setPlayerWidth] = useState<number>(60);
   const playerHeight: number = 60 * scale;
@@ -104,6 +102,7 @@ const Game: React.FC = () => {
   const [joystickRotationHeld, setJoystickRotationHeld] = useState<boolean>(false);
   // const [player, setPlayer] = useState<playrType[]>([{type: play}])
   // ----- MISSILES ----- //
+  const [shootNow, setShootNow] = useState<boolean>(false);
   const [recharged, setRecharged] = useState<boolean>(true);
   const [lastShotTime, setLastShotTime] = useState<number>(0);
   const shootingInterval: number = 1000;
@@ -122,6 +121,19 @@ const Game: React.FC = () => {
   const [enemiesKilled, setEnemiesKilled] = useState(new Map());
   const [totalEnemiesSpawned, setTotalEnemiesSpawned] = useState<number>(0);
 
+  useEffect(() => {
+    if (playerStats.upgrades.find(upgrade => upgrade.name === "Hyper boosters")?.owned) {
+      setMaxSpeed(3)
+      setAccelerationRate(0.03)
+      setFriction(0.03)
+    }
+    else if (playerStats.upgrades.find(upgrade => upgrade.name === "Basic boosters")?.owned) {
+      setMaxSpeed(2)
+      setAccelerationRate(0.02)
+      setFriction(0.02)
+    }
+  }, [])
+
   const updateJoystickMove = (event: IJoystickUpdateEvent) => {
     if (event.type === "move") {
       if (event.direction === "FORWARD") {
@@ -137,8 +149,6 @@ const Game: React.FC = () => {
       setMovement(null);
     }
   };
-
-  const [shootNow, setShootNow] = useState<boolean>(false);
 
   useEffect(() => {
     let timeoutId: any;
@@ -187,18 +197,50 @@ const Game: React.FC = () => {
   }
 
   const spawnMissileFunc = () => {
+    let typeOfMissile: number = 1;
+
+    if (playerStats.upgrades.find(upgrade => upgrade.name === "Even better missiles")?.owned) {
+      typeOfMissile = 3
+    }
+    else if (playerStats.upgrades.find(upgrade => upgrade.name === "Better missiles")?.owned) {
+      typeOfMissile = 2
+    }
+
+    if (playerStats.upgrades.find(upgrade => upgrade.name === "Triple missiles")?.owned) {
+      for (let i = -1; i < 2; i++) {
+        const adjustedRotation = playerRotation + (i * 15);
+        const newRotationRadians = (adjustedRotation * Math.PI) / 180;
+        const newDirectionX = Math.sin(newRotationRadians); // Change sin and cos
+        const newDirectionY = -Math.cos(newRotationRadians); // Change sin and cos
+    
+        spawnMissile(
+          newDirectionX,
+          newDirectionY,
+          { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
+          adjustedRotation,
+          typeOfMissile,
+          false,
+          setMissiles,
+          gamePaused,
+          scale,
+          uuidv4
+        );
+      }
+    }
+    else {
       spawnMissile(
         Math.sin(playerRotation * (Math.PI / 180)),
         -Math.cos(playerRotation * (Math.PI / 180)),
         { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
         playerRotation,
-        2,
+        typeOfMissile,
         false,
         setMissiles,
         gamePaused,
         scale,
         uuidv4
       );
+    }
   }
   
   // ----- HANDLING KEYBOARD ACTIONS ----- //
@@ -273,8 +315,6 @@ const Game: React.FC = () => {
     };
   }, [accelerationRate, movement]);
   // ----- HANDLING KEYBOARD ACTIONS ----- //
-
-  
 
 
   // ----- SPAWNING PLAYER MISSILES ----- //
@@ -569,6 +609,10 @@ const Game: React.FC = () => {
         if (hitPlayer && !enemiesKilled.get(updatedEnemy.id)) {
           setEnemiesKilled((prevMap) => new Map(prevMap.set(updatedEnemy.id, true)));
           dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -1 });
+          if (playerStats.health < 1) {
+            setKilled(true);
+            setGamePaused(true);
+          }
         }
 
         if (!hitPlayer && updatedEnemy.health <= 0 && !enemiesKilled.get(updatedEnemy.id)) {
@@ -588,6 +632,10 @@ const Game: React.FC = () => {
 
       if (collisionPlayer && missile.isEnemy) {
         dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: -missile.damage });
+        if (playerStats.health <= 1) {
+          setKilled(true);
+          setGamePaused(true);
+        }
         const updatedMissile = { ...missile, collisions: missile.collisions - 1 };
         setMissiles((prevMissiles) => {
           const updatedMissiles = [...prevMissiles];
@@ -756,7 +804,7 @@ const Game: React.FC = () => {
           uuidv4={uuidv4}
         />
       ))}
-      <button disabled={showFinishedLevelMenu} onClick={handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
+      <button disabled={showFinishedLevelMenu || killed} onClick={handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
       <button onClick={() => setAutoshoot(prev => !prev)}>Autoshoot: {autoshoot? "On" : "Off"}</button>
       <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketMovement}`}>
         <Joystick move={updateJoystickMove} stop={updateJoystickMove} size={100} baseColor="red" stickColor="blue" />
@@ -767,6 +815,12 @@ const Game: React.FC = () => {
       {
         showFinishedLevelMenu ?
         <LevelCompleted />
+        :
+        null
+      }
+      {
+        killed?
+        <h1>You died!</h1>
         :
         null
       }
