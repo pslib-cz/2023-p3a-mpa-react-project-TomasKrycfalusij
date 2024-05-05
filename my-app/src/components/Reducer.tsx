@@ -29,7 +29,7 @@ const initialUpgrades: Upgrade[] = [
     owned: false
   },
   {
-    name: "Explosive missiles",
+    name: "Even better missiles",
     cost: 60,
     type: "missile",
     owned: false
@@ -38,13 +38,8 @@ const initialUpgrades: Upgrade[] = [
     name: "Stronger plates",
     cost: 20,
     type: "health",
-    owned: false
-  },
-  {
-    name: "Titanium plates",
-    cost: 40,
-    type: "health",
-    owned: false
+    owned: false,
+    level: 1
   },
   {
     name: "Regenerative plates",
@@ -57,7 +52,7 @@ const initialUpgrades: Upgrade[] = [
 
 // Define the initial state
 export const initialState: State = {
-  money: 0,
+  money: 200,
   health: 10,
   level: 1,
   gameLevelReached: 1,
@@ -76,7 +71,7 @@ const reducer: Reducer<State, Action> = (state, action) => {
         ...state,
         health: state.health + action.payload,
       };
-    case ActionType.UPDATE_UPGRADE: // Handle update upgrade action
+    case ActionType.UPDATE_UPGRADE:
       return {
         ...state,
         upgrades: state.upgrades.map((upgrade) => {
@@ -89,18 +84,33 @@ const reducer: Reducer<State, Action> = (state, action) => {
           return upgrade;
         }),
       };
+    case ActionType.UPDATE_UPGRADE_LEVEL:
+      return {
+        ...state,
+        upgrades: state.upgrades.map((upgrade) => {
+          if (upgrade.name === action.payload.upgradeName) {
+            return {
+              ...upgrade,
+              level: action.payload.level,
+            };
+          }
+          return upgrade;
+        }),
+      };
     case ActionType.UPDATE_LEVEL:
-        return {
-          ...state,
-          health: 10,
-          level: action.payload,
-        };
+      return {
+        ...state,
+        health: 10,
+        level: action.payload,
+      };
     case ActionType.UPDATE_GAME_LEVEL_REACHED:
       return {
         ...state,
         health: 10,
         gameLevelReached: action.payload,
-      }
+      };
+    default:
+      return state;
   }
 };
 

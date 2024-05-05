@@ -1,6 +1,6 @@
 import React, { createContext, PropsWithChildren, useEffect, useReducer } from 'react';
 import reducer, { initialState } from './Reducer';
-import { ActionType, PlayerInfo } from '../types/ReducerTypes'; // Import the 'Action' type from the appropriate package
+import { PlayerInfo } from '../types/ReducerTypes'; // Import the 'Action' type from the appropriate package
 
 
 export const Context = createContext<PlayerInfo>({

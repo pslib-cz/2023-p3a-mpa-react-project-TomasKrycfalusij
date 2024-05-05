@@ -720,7 +720,6 @@ const Game: React.FC = () => {
   // ----- LEVEL COMPLETION ----- //
 
 
-
   // ----- PAUSING THE GAME ----- //
   const handlePauseClick = () => {
     setGamePaused(true);
