@@ -13,7 +13,9 @@ import { Joystick } from 'react-joystick-component';
 import { allLevels } from '../types/Levels';
 import { useWindowSize, useClickAnyWhere } from 'usehooks-ts';
 import LevelCompleted from '../components/LevelCompleted';
-import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';"c:/Users/nestr/OneDrive/Plocha/School/webs/2023-p3a-mpa-react-project-TomasKrycfalusij/my-app/node_modules/react-joystick-component/build/lib/Joystick"
+import { IJoystickUpdateEvent } from 'react-joystick-component/build/lib/Joystick';
+import { Link } from 'react-router-dom';
+"c:/Users/nestr/OneDrive/Plocha/School/webs/2023-p3a-mpa-react-project-TomasKrycfalusij/my-app/node_modules/react-joystick-component/build/lib/Joystick"
 
 export const spawnMissile = (
   normalizedDx: number,
@@ -51,10 +53,6 @@ const Game: React.FC = () => {
   const [autoshoot, setAutoshoot] = useState(false);
   const [showFinishedLevelMenu, setShowFinishedLevelMenu] = useState(false);
   
-  useEffect(() => { 
-    playerStats.health = 3 * Number(playerStats.upgrades.find(upgrade => upgrade.name === "Stronger plates")?.level);
-    localStorage.setItem("playerStats", JSON.stringify(playerStats));
-  }, [])
   // ----- OTHER ----- //
 
   const { width: screenWidthReal, height: screenHeightReal } = useWindowSize();
@@ -66,6 +64,7 @@ const Game: React.FC = () => {
   useEffect(() => {
     if (screenWidthReal <= 960) {
       setScreenHeight(screenHeightReal - 200);
+      setScreenWidth(screenWidthReal)
       setMobile(true);
       setScale(0.8);
     }
@@ -84,6 +83,12 @@ const Game: React.FC = () => {
     x: screenWidth / 2,
     y: screenHeight / 2,
   });
+  const [playerMaxHealth, setPlayerMaxHealth] = useState<number>(3);
+  useEffect(() => { 
+    playerStats.health = 3 * Number(playerStats.upgrades.find(upgrade => upgrade.name === "Stronger plates")?.level);
+    setPlayerMaxHealth(playerStats.health);
+    localStorage.setItem("playerStats", JSON.stringify(playerStats));
+  }, [])
   const [mousePosition, setMousePosition] = useState<Coordinates>({ x: 0, y: 0 });
   const [playerRotation, setPlayerRotation] = useState<number>(0);
   const [velocity, setVelocity] = useState<Coordinates>({ x: 0, y: 0 });
@@ -104,7 +109,6 @@ const Game: React.FC = () => {
   // ----- MISSILES ----- //
   const [shootNow, setShootNow] = useState<boolean>(false);
   const [recharged, setRecharged] = useState<boolean>(true);
-  const [lastShotTime, setLastShotTime] = useState<number>(0);
   const shootingInterval: number = 1000;
   // const [missileIntervalId, setMissileIntervalId] = useState<number | null>(null);
   const [missiles, setMissiles] = useState<MissileType[]>([])
@@ -151,7 +155,7 @@ const Game: React.FC = () => {
   };
 
   useEffect(() => {
-    let timeoutId: any;
+    let timeoutId: NodeJS.Timeout;
       timeoutId = setInterval(() => {
         if (mobile || autoshoot) {
           setRecharged(true)
@@ -166,13 +170,12 @@ const Game: React.FC = () => {
   }, [mobile, autoshoot]);
 
   useEffect(() => {
-    let timeoutRechargeId: any;
+    let timeoutRechargeId: NodeJS.Timeout;
     if (recharged) {
       spawnMissileFunc();
       setRecharged(false);
       timeoutRechargeId = setInterval(() => {
         setRecharged(true);
-        console.log("recharged")
       }, shootingInterval);
     }
     return () => {
@@ -181,7 +184,6 @@ const Game: React.FC = () => {
       }
     };
   }, [shootNow])
-
 
   const updateJoystickRotate = (event: IJoystickUpdateEvent) => {
     if (event.type === "move") {
@@ -318,7 +320,7 @@ const Game: React.FC = () => {
 
 
   // ----- SPAWNING PLAYER MISSILES ----- //
-  const mouseClick = (e: MouseEvent) => {
+  const mouseClick = () => {
     if (screenWidth >= 960 && !joystickRotationHeld && recharged) {
       setShootNow(prev => !prev);
     }
@@ -665,7 +667,7 @@ const Game: React.FC = () => {
   // -----   A L L   T H E   B I G   L O G I C   ----- //
 
 
-  // ----- ROTATING PLAYER ----- //
+  
   useEffect(() => {
     if (!gamePaused && screenWidth >= 960) {
       const handleMouseMove = (event: MouseEvent) => {
@@ -673,13 +675,32 @@ const Game: React.FC = () => {
       };
   
       document.addEventListener('mousemove', handleMouseMove);
-  
       return () => {
         document.removeEventListener('mousemove', handleMouseMove);
       };
     }
   }, [gamePaused]);
 
+  useEffect(() => {
+    if (!gamePaused) {
+      const regenInterval: number = 5000;
+  
+      const intervalId = setInterval(() => {
+        if (
+          playerStats.upgrades.find(upgrade => upgrade.name === "Regenerative plates")?.owned &&
+          playerStats.health < playerMaxHealth // Check if player's health is less than max health
+        ) {
+          dispatch({ type: ActionType.UPDATE_PLAYER_HEALTH, payload: 1 });
+        }
+      }, regenInterval);
+      return () => {
+        clearInterval(intervalId);
+      };
+    }
+  }, [playerStats.health, playerMaxHealth]);
+
+
+  // ----- ROTATING PLAYER ----- //
   useEffect(() => {
     if (!gamePaused && screenWidth >= 960) {
       const playerCenterX = playerPosition.x + playerWidth / 2;
@@ -783,6 +804,11 @@ const Game: React.FC = () => {
         <p className={gameStyle.statsValue}>Level: {playerStats.level}</p>
         <p className={gameStyle.statsValue}>Health: {playerStats.health}</p>
       </div>
+      <div className={gameStyle.adjustButtons}>
+        <Link to="/" className="alink">Main Menu</Link>
+        <button className="btn" disabled={showFinishedLevelMenu || killed} onClick={handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
+        <button className="btn" onClick={() => setAutoshoot(prev => !prev)}>Autoshoot: {autoshoot? "On" : "Off"}</button>
+      </div>
       {missiles.map((missile) => (
           <Missile key={missile.key} type={missile.type} position={missile.position} rotation={missile.rotation}/>
       ))}
@@ -798,14 +824,11 @@ const Game: React.FC = () => {
           maxHealth={enemy.maxHealth}
           health={enemy.health}
           setMissiles={setMissiles}
-          missileFrequency={enemy.missileFrequency}
           texture={enemy.texture}
           gamePaused={gamePaused}
           uuidv4={uuidv4}
         />
       ))}
-      <button disabled={showFinishedLevelMenu || killed} onClick={handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
-      <button onClick={() => setAutoshoot(prev => !prev)}>Autoshoot: {autoshoot? "On" : "Off"}</button>
       <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketMovement}`}>
         <Joystick move={updateJoystickMove} stop={updateJoystickMove} size={100} baseColor="red" stickColor="blue" />
       </div>
@@ -820,7 +843,10 @@ const Game: React.FC = () => {
       }
       {
         killed?
-        <h1>You died!</h1>
+        <div className={gameStyle.youDiedContainer}>
+          <p className={gameStyle.youDiedText}>You died!</p>
+          <button className="btn" onClick={() => window.location.reload()}>Restart</button>
+        </div>
         :
         null
       }

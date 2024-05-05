@@ -1,5 +1,7 @@
 import React from 'react';
 import PlayerStyle from "./PlayerStyle.module.css";
+import { useContext } from 'react';
+import { Context } from './ContextProvider';
 
 interface PlayerProps {
   position: { x: number; y: number };
@@ -10,6 +12,7 @@ interface PlayerProps {
 }
 
 const Player: React.FC<PlayerProps> = ({ position, width, height, rotation, moving }) => {
+  const { playerStats } = useContext(Context);
 
   const playerPositioner = {
     width: `${width}px`,
@@ -22,8 +25,14 @@ const Player: React.FC<PlayerProps> = ({ position, width, height, rotation, movi
   return (
     <div style={playerPositioner} className={PlayerStyle.playerPositioner}>
       <div className={PlayerStyle.playerContainer}>
-        <div className={`${PlayerStyle.boosterFire} ${moving ? PlayerStyle.boosterFireBoost : PlayerStyle.boosterFireDefault}`}></div>
-        <div className={PlayerStyle.boosters}></div>
+        {
+          (playerStats.upgrades.find((upgrade) => upgrade.name === 'Basic boosters')?.owned || playerStats.upgrades.find((upgrade) => upgrade.name === 'Hyper boosters')?.owned) &&
+            <div className={`${PlayerStyle.boosterFire} ${moving ? PlayerStyle.boosterFireBoost : PlayerStyle.boosterFireDefault}`}></div>
+        }
+        {
+          (playerStats.upgrades.find((upgrade) => upgrade.name === 'Basic boosters')?.owned || playerStats.upgrades.find((upgrade) => upgrade.name === 'Hyper boosters')?.owned) &&
+            <div className={PlayerStyle.boosters}></div>
+        }
         <div className={PlayerStyle.player}></div>
       </div>
     </div>

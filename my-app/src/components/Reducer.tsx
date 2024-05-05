@@ -1,4 +1,4 @@
-import { Reducer, useEffect } from 'react';
+import { Reducer } from 'react';
 import { State, Action, ActionType } from '../types/ReducerTypes';
 import { Upgrade } from '../types/ReducerTypes';
 
@@ -6,31 +6,31 @@ import { Upgrade } from '../types/ReducerTypes';
 const initialUpgrades: Upgrade[] = [
   {
     name: "Basic boosters",
-    cost: 20,
+    cost: 30,
     type: "movement",
     owned: false
   },
   {
     name: "Hyper boosters",
-    cost: 40,
+    cost: 100,
     type: "movement",
     owned: false
   },
   {
     name: "Better missiles",
-    cost: 20,
+    cost: 30,
     type: "missile",
     owned: false
   },
   {
     name: "Even better missiles",
-    cost: 60,
+    cost: 100,
     type: "missile",
     owned: false
   },
   {
     name: "Triple missiles",
-    cost: 50,
+    cost: 100,
     type: "missile",
     owned: false
   },
@@ -43,19 +43,18 @@ const initialUpgrades: Upgrade[] = [
   },
   {
     name: "Regenerative plates",
-    cost: 20,
+    cost: 100,
     type: "health",
     owned: false,
-    level: 1
   }
 ];
 
 // Define the initial state
 export const initialState: State = {
-  money: 500,
-  health: 10,
+  money: 0,
+  health: 3,
   level: 1,
-  gameLevelReached: 7,
+  gameLevelReached: 1,
   upgrades: initialUpgrades,
 };
 

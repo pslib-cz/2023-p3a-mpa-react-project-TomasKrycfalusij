@@ -15,9 +15,11 @@ const MainMenu = () => {
       <div className={mainMenuStyle.buttonsContainer}>
         <h1 className={mainMenuStyle.header}>Protect the sun!</h1>
         <h2 className={mainMenuStyle.sectionName}>Main Menu</h2>
-        <Link className={mainMenuStyle.menuLink} to="/levels">Levels</Link>
-        <Link className={mainMenuStyle.menuLink} to="/shop">Go to Shop</Link>
-        <button onClick={() => deleteAllData()} className={mainMenuStyle.deleteDataButton}>Remove all data</button>
+        <div className="linksContainer">
+          <Link className={`alink`} to="/levels">Levels</Link>
+          <Link className={`alink`} to="/shop">Go to Shop</Link>
+        </div>
+        <button onClick={() => deleteAllData()} className="btn">Reset game</button>
       </div>
       <div className={mainMenuStyle.playerIcon}></div>
     </div>

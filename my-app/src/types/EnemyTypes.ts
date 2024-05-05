@@ -37,7 +37,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 1,
     missileFrequency: 2000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
+    description: "Basic shooter. Doesn't do much, but you still need to be aware.",
     texture: "/src/assets/enemies/Nairan - Torpedo Ship - Base.png"
   },
   {
@@ -56,7 +56,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 1,
     missileFrequency: 0,
     name: "Střelec",
-    description: "Bomber. Přiletí k tobě a vybouchne v tvé blízkosti.",
+    description: "Bomber. He is very annoying and fast. He'll get to you and then explode.",
     texture: "/src/assets/enemies/Nairan - Scout - Base.png"
   },
   {
@@ -75,7 +75,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 2,
     missileFrequency: 1000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
+    description: "Advanced shooter. His accuracy and reload time makes it hard for you to avoid.",
     texture: "/src/assets/enemies/Nairan - Frigate - Base.png"
   },
   {
@@ -94,7 +94,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 2,
     missileFrequency: 3000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
+    description: "Surrounder. This enemy shoots 3 missiles at once.",
     texture: "/src/assets/enemies/Nairan - Battlecruiser - Base.png"
   },
   {
@@ -113,7 +113,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 4,
     missileFrequency: 4000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
+    description: "The most powerful enemy. he is slow but his topedo missiles never miss.",
     texture: "/src/assets/enemies/Nairan - Dreadnought - Base.png"
   }
 ];

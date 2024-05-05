@@ -11,7 +11,11 @@
 
 .singleUpgrade {
     width: 16em;
-    padding: 0.25em 1em;
+    padding: 1em;
     background-color: var(--dark-gray);
-    border-radius: 2em;
+    border-radius: 1em;
+}
+
+.moneyText {
+    font-size: 1.5em;
 }

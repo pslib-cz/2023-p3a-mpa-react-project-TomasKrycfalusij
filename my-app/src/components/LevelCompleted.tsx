@@ -1,13 +1,12 @@
-import React from 'react'
-import styles from './LevelCompletedStyle.module.css'
+import styles from './LevelCompleted.module.css'
 import { Link } from 'react-router-dom'
 
 const LevelCompleted = () => {
   return (
-    <div className={styles.mainContainer}>
-      <p>Level finished!</p>
-      <Link to="/levels">Levels</Link>
-    </div>
+  <div className={styles.levelCompletedContainer}>
+    <p className={styles.levelCompletedText}>Level finished!</p>
+    <Link className="alink" to="/levels">Levels</Link>
+  </div>
   )
 }
 

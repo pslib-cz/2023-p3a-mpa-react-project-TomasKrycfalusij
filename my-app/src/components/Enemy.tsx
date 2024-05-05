@@ -1,9 +1,8 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import enemyStyle from './Enemy.module.css';
 import { MissileType } from '../types/MissileTypes';
 import { spawnMissile } from '../pages/Game';
 import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
-import { useTimeout } from 'usehooks-ts';
 
 interface EnemyProps {
   id: string;
@@ -14,7 +13,6 @@ interface EnemyProps {
   maxHealth: number;
   health: number;
   setMissiles: React.Dispatch<React.SetStateAction<MissileType[]>>;
-  missileFrequency: number;
   texture: string;
   gamePaused: boolean;
   uuidv4: () => string;
@@ -29,12 +27,11 @@ const Enemy: React.FC<EnemyProps> = ({
   maxHealth,
   health,
   setMissiles,
-  missileFrequency,
   texture,
   gamePaused,
   uuidv4
 }) => {
-  const [chosenEnemy, setChosenEnemy] = useState<EnemyType | undefined>(enemiesSelector.find(enemy => enemy.type === type));
+  const chosenEnemy: EnemyType | undefined = (enemiesSelector.find(enemy => enemy.type === type));
   const latestPosition = useRef(position);
   const latestRotation = useRef(rotation);
 

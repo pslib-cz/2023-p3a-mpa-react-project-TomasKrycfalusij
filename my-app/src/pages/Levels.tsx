@@ -38,8 +38,13 @@ const Levels = () => {
           </Link>
         ))}
       </div>
-      <Link to="/shop">Go to Shop</Link>
-      <Link to="/">Main menu</Link>
+      {
+        playerStats.gameLevelReached >= allLevels.length && <p>FINISHED GAME. CONGRATULATIONS!</p>
+      }
+      <div className="linksContainer">
+        <Link className="alink" to="/shop">Go to Shop</Link>
+        <Link className="alink" to="/">Main menu</Link>
+      </div>
     </div>
   )
 }

@@ -49,3 +49,23 @@
         display: none;
     }
 }
+
+.youDiedContainer {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    text-align: center;
+}
+
+.youDiedText {
+    margin: 0;
+    font-size: 3em;
+    color: var(--text-color);
+}
+
+.adjustButtons {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+}
