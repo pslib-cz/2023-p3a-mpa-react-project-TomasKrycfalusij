@@ -334,32 +334,80 @@ const Game: React.FC = () => {
     // ----- PLAYER SLOW DOWN MOVEMENT ----- //
 
 
-
     // ----- MISSILE POSITION UPDATE ----- //
     const updateMissilePositions = () => {
       setMissiles((prevMissiles) =>
         prevMissiles.map((missile) => {
-          const withinBoundaries =
-            missile.position.x >= 0 &&
-            missile.position.x <= screenWidth &&
-            missile.position.y >= 0 &&
-            missile.position.y <= screenHeight;
+          let newPosition;
+          let remove = false;
 
-          const newPosition = {
-            x: missile.position.x + missile.velocityX,
-            y: missile.position.y + missile.velocityY,
-          };
-  
+          if (missile.type === 4) {
+            const playerCenterX = playerPosition.x + playerWidth / 2;
+            const playerCenterY = playerPosition.y + playerHeight / 2;
+
+            const dx = playerCenterX - missile.position.x;
+            const dy = playerCenterY - missile.position.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            const directionX = dx / distance;
+            const directionY = dy / distance;
+
+            const angleToPlayer = Math.atan2(dy, dx);
+            
+            // Update the missile's rotation to face the player
+            let missileRotation = angleToPlayer * (180 / Math.PI) + 90;
+
+            const slowdownRate = 0.9993;
+            missile.speed *= slowdownRate;
+
+            const minSpeed = 0.6;
+            if (missile.speed < minSpeed) {
+              remove = true;
+            }
+            newPosition = {
+              x: missile.position.x + directionX * missile.speed,
+              y: missile.position.y + directionY * missile.speed,
+            };
+
+            if (
+              newPosition.x < 0 ||
+              newPosition.x > screenWidth ||
+              newPosition.y < 0 ||
+              newPosition.y > screenHeight
+            ) {
+              remove = true;
+            }
+            
+            return {
+              ...missile,
+              position: newPosition,
+              rotation: missileRotation,
+              remove: remove,
+            };
+          } else {
+            newPosition = {
+              x: missile.position.x + missile.velocityX,
+              y: missile.position.y + missile.velocityY,
+            };
+            if (
+              newPosition.x < 0 ||
+              newPosition.x > screenWidth ||
+              newPosition.y < 0 ||
+              newPosition.y > screenHeight
+            ) {
+              remove = true;
+            }
+          }
+
           return {
             ...missile,
             position: newPosition,
-            remove: !withinBoundaries,
+            remove: remove,
           };
         }).filter((missile) => !missile.remove)
       );
     };
     // ----- MISSILE POSITION UPDATE ----- //
-  
 
 
     // ----- MOVING ENEMIES ----- //
@@ -425,7 +473,7 @@ const Game: React.FC = () => {
                 velocityY = 0;
               }
             }
-          } else if (enemy.type === 4) {
+          } else if (enemy.type === 4 || enemy.type === 5) {
             if (distance > screenWidth * 0.3) {
               velocityX = (dx / distance) * enemy.speed;
               velocityY = (dy / distance) * enemy.speed;

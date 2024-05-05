@@ -37,7 +37,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 1,
     missileFrequency: 2000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
     texture: "/src/assets/enemies/Nairan - Torpedo Ship - Base.png"
   },
   {
@@ -75,7 +75,7 @@ export const enemiesSelector: EnemyType[] = [
     missileType: 2,
     missileFrequency: 1000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
     texture: "/src/assets/enemies/Nairan - Frigate - Base.png"
   },
   {
@@ -90,11 +90,30 @@ export const enemiesSelector: EnemyType[] = [
     maxHealth: 10,
     health: 10,
     speed: 0.3,
-    reward: 15,
+    reward: 30,
     missileType: 3,
     missileFrequency: 3000,
     name: "Střelec",
-    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rootovat a pokusí se ho zničit ze všech stran.",
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
     texture: "/src/assets/enemies/Nairan - Battlecruiser - Base.png"
+  },
+  {
+    id: "enemy5",
+    type: 5,
+    position: { x: 0, y: 0 },
+    velocityX: 0,
+    velocityY: 0,
+    width: 90,
+    height: 90,
+    rotation: 0,
+    maxHealth: 25,
+    health: 25,
+    speed: 0.2,
+    reward: 40,
+    missileType: 4,
+    missileFrequency: 4000,
+    name: "Střelec",
+    description: "Základní střelec. Jakmile se dostane dostatečně blízko, začne kolem hráče rotovat a pokusí se ho zničit ze všech stran.",
+    texture: "/src/assets/enemies/Nairan - Dreadnought - Base.png"
   }
 ];

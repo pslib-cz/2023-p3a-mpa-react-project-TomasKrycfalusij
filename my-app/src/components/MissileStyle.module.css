@@ -17,6 +17,12 @@
     height: 18px;
 }
 
+.missile4Positioner {
+    position: absolute;
+    width: 10px;
+    height: 18px;
+}
+
 /* ------------------- */
 
 .missileContainer {
@@ -51,6 +57,12 @@
     background-size: 500%;
     background-position: 0% 70%;
     animation: animateMissile3 0.3s steps(1) infinite;
+}
+
+.missile4Animation {
+    background-size: 300%;
+    background-position: 0% 80%;
+    animation: animateMissile4 0.3s steps(1) infinite;
 }
 
 @keyframes animateMissile2 {
@@ -88,5 +100,20 @@
     80% {
         background-image: url("../assets/missiles/Nairan - Bolt.png");
         background-position: 100% 70%;
+    }
+}
+
+@keyframes animateMissile4 {
+    0% {
+        background-image: url("../assets/missiles/Nairan - Torpedo.png");
+        background-position: 0% 80%;
+    }
+    33% {
+        background-image: url("../assets/missiles/Nairan - Torpedo.png");
+        background-position: 50% 80%;
+    }
+    66% {
+        background-image: url("../assets/missiles/Nairan - Torpedo.png");
+        background-position: 100% 80%;
     }
 }

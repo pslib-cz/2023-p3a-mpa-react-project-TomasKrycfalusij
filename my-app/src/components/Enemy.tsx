@@ -3,6 +3,7 @@ import enemyStyle from './EnemyStyle.module.css';
 import { MissileType } from '../types/MissileTypes';
 import { spawnMissile } from '../pages/Game';
 import { EnemyType, enemiesSelector } from '../types/EnemyTypes';
+import { useTimeout } from 'usehooks-ts';
 
 interface EnemyProps {
   id: string;
@@ -59,7 +60,6 @@ const Enemy: React.FC<EnemyProps> = ({
     if (chosenEnemy?.type === 4) {
       for (let i = -1; i < 2; i++) {
         const adjustedRotation = latestRotation.current + (i * 15);
-        // Calculate direction components based on the adjusted rotation
         const newRotationRadians = (adjustedRotation * Math.PI) / 180;
         const newCorrectedRotationRadians = newRotationRadians - (Math.PI / 2);
         const newDirectionX = Math.cos(newCorrectedRotationRadians);
@@ -67,7 +67,7 @@ const Enemy: React.FC<EnemyProps> = ({
   
         spawnMissile(
           newDirectionX,
-          newDirectionY, // Corrected here
+          newDirectionY,
           { x: spawnX, y: spawnY },
           adjustedRotation,
           Number(chosenEnemy?.missileType),
@@ -77,6 +77,24 @@ const Enemy: React.FC<EnemyProps> = ({
           scale,
           uuidv4
         );
+      }
+    }
+    else if (chosenEnemy?.type === 5) {
+      for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+          spawnMissile(
+            directionX,
+            directionY,
+            { x: spawnX, y: spawnY },
+            latestRotation.current,
+            Number(chosenEnemy?.missileType),
+            true,
+            setMissiles,
+            gamePaused,
+            scale,
+            uuidv4
+          );
+        }, 250 * i);
       }
     }
     else {

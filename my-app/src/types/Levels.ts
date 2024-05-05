@@ -30,7 +30,7 @@ export const allLevels: LevelType[] = [
     },
     {
         level: 7,
-        enemies: [1, 1, 1, 1, 1]
+        enemies: [3, 5, 3, 2, 2]
     },
     {
         level: 8,
