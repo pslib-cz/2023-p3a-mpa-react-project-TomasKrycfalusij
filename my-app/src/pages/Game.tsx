@@ -756,7 +756,7 @@ const Game: React.FC = () => {
           uuidv4={uuidv4}
         />
       ))}
-      <button disabled={showFinishedLevelMenu} onClick={() => handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
+      <button disabled={showFinishedLevelMenu} onClick={handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
       <button onClick={() => setAutoshoot(prev => !prev)}>Autoshoot: {autoshoot? "On" : "Off"}</button>
       <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketMovement}`}>
         <Joystick move={updateJoystickMove} stop={updateJoystickMove} size={100} baseColor="red" stickColor="blue" />
