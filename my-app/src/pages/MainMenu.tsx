@@ -16,6 +16,7 @@ const MainMenu = () => {
         <h1 className={mainMenuStyle.header}>Protect the sun!</h1>
         <h2 className={mainMenuStyle.sectionName}>Main Menu</h2>
         <Link className={mainMenuStyle.menuLink} to="/levels">Levels</Link>
+        <Link className={mainMenuStyle.menuLink} to="/shop">Go to Shop</Link>
         <button onClick={() => deleteAllData()} className={mainMenuStyle.deleteDataButton}>Remove all data</button>
       </div>
       <div className={mainMenuStyle.playerIcon}></div>

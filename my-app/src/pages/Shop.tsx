@@ -7,11 +7,10 @@ import { useContext } from 'react';
 const Shop = () => {
   const { playerStats, dispatch } = useContext(Context);
 
-
   const handleBuyItem = (name: string, cost: number, level?: number) => {
     const upgrade = playerStats.upgrades.find((u: Upgrade) => u.name === name);
 
-    if (upgrade && (!upgrade.level || upgrade.level < 5)) {
+    if (upgrade && (!upgrade.level || upgrade.level < 6)) {
       if (playerStats.money >= cost) {
         dispatch({ type: ActionType.UPDATE_MONEY, payload: -cost });
 
@@ -19,7 +18,7 @@ const Shop = () => {
 
         const updatedUpgrades = playerStats.upgrades.map((u: Upgrade) => {
           if (u.name === name) {
-            return { ...u, level: newLevel };
+            return { ...u, level: newLevel, price: u.cost * newLevel};
           }
           return u;
         });
@@ -38,8 +37,6 @@ const Shop = () => {
     }
   };
 
-  
-
   return (
     <div className={shopStyle.pageContainer}>
       <h1>SHOP</h1>
@@ -51,13 +48,19 @@ const Shop = () => {
             <div className={shopStyle.singleUpgrade} key={index}>
               <h2>{upgrade.name}</h2>
               <p>Owned? {upgrade.owned ? 'Yes' : 'No'}</p>
-              {upgrade.level && <p>Level: {upgrade.level}</p>}
-              <p>Cost: {upgrade.cost}</p>
+              {
+                upgrade.level && upgrade.level > 1 && <p>Level: {upgrade.level - 1}</p>
+              }
+              {
+                !upgrade.owned?
+                <p>Cost: {upgrade.level? upgrade.cost * upgrade.level : upgrade.cost}</p>
+                : null
+              }
               <button
-                disabled={upgrade.owned && (!upgrade.level || upgrade.level === 5)}
-                onClick={() => handleBuyItem(upgrade.name, upgrade.cost, upgrade.level)}
+                disabled={upgrade.owned && (!upgrade.level || upgrade.level === 6)}
+                onClick={() => handleBuyItem(upgrade.name, upgrade.level? upgrade.cost * upgrade.level : upgrade.cost, upgrade.level)}
               >
-                {upgrade.owned ? (upgrade.level && upgrade.level < 5? 'Upgrade' : 'Owned') : 'Buy'}
+                {upgrade.owned ? (upgrade.level && upgrade.level < 6? 'Upgrade' : 'Owned') : 'Buy'}
               </button>
             </div>
           );
