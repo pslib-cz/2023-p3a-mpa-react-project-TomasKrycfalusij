@@ -100,13 +100,12 @@ const reducer: Reducer<State, Action> = (state, action) => {
     case ActionType.UPDATE_LEVEL:
       return {
         ...state,
-        health: 10,
+        health: state.health = 3 * Number(state.upgrades.find(upgrade => upgrade.name === "Stronger plates")?.level),
         level: action.payload,
       };
     case ActionType.UPDATE_GAME_LEVEL_REACHED:
       return {
         ...state,
-        health: 10,
         gameLevelReached: action.payload,
       };
     default:

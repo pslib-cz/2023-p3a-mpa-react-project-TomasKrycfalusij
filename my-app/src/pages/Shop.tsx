@@ -42,6 +42,7 @@ const Shop = () => {
       <h1>SHOP</h1>
       <p>Money: {playerStats.money}</p>
       <Link to="/levels">Go to Levels</Link>
+      <Link to="/">Main menu</Link>
       <div className={shopStyle.upgradesMenu}>
         {playerStats.upgrades.map((upgrade: Upgrade, index: number) => {
           return (

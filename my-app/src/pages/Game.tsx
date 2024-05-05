@@ -52,7 +52,7 @@ const Game: React.FC = () => {
   const [showFinishedLevelMenu, setShowFinishedLevelMenu] = useState(false);
   
   useEffect(() => { 
-    playerStats.health = 10;
+    playerStats.health = 3 * Number(playerStats.upgrades.find(upgrade => upgrade.name === "Stronger plates")?.level);
     localStorage.setItem("playerStats", JSON.stringify(playerStats));
   }, [])
   // ----- OTHER ----- //
@@ -188,11 +188,11 @@ const Game: React.FC = () => {
 
   const spawnMissileFunc = () => {
       spawnMissile(
-        Math.sin(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector x component
-        -Math.cos(playerRotation * (Math.PI / 180)), // Calculate normalized direction vector y component
+        Math.sin(playerRotation * (Math.PI / 180)),
+        -Math.cos(playerRotation * (Math.PI / 180)),
         { x: playerPosition.x + playerWidth / 2, y: playerPosition.y + playerHeight / 2 },
-        playerRotation, // Pass player's rotation angle
-        2, // Example missile type, replace with desired value
+        playerRotation,
+        2,
         false,
         setMissiles,
         gamePaused,
@@ -722,11 +722,7 @@ const Game: React.FC = () => {
 
   // ----- PAUSING THE GAME ----- //
   const handlePauseClick = () => {
-    setGamePaused(true);
-  };
-
-  const handleResumeClick = () => {
-    setGamePaused(false);
+    setGamePaused(prev => !prev);
   };
 
   // ----- PAUSING THE GAME ----- //
@@ -739,7 +735,6 @@ const Game: React.FC = () => {
         <p className={gameStyle.statsValue}>Level: {playerStats.level}</p>
         <p className={gameStyle.statsValue}>Health: {playerStats.health}</p>
       </div>
-      <button onClick={() => dispatch({ type: ActionType.UPDATE_MONEY, payload: 10 })}>Add Money</button>
       {missiles.map((missile) => (
           <Missile key={missile.key} type={missile.type} position={missile.position} rotation={missile.rotation}/>
       ))}
@@ -761,12 +756,8 @@ const Game: React.FC = () => {
           uuidv4={uuidv4}
         />
       ))}
-            {!gamePaused && (
-        <button onClick={handlePauseClick}>Pause</button>
-      )}
-      {gamePaused && (
-        <button onClick={handleResumeClick}>Resume</button>
-      )}
+      <button disabled={showFinishedLevelMenu} onClick={() => handlePauseClick}>{gamePaused? "Resume" : "Pause"}</button>
+      <button onClick={() => setAutoshoot(prev => !prev)}>Autoshoot: {autoshoot? "On" : "Off"}</button>
       <div className={`${gameStyle.joystickContainer} ${gameStyle.joystickRocketMovement}`}>
         <Joystick move={updateJoystickMove} stop={updateJoystickMove} size={100} baseColor="red" stickColor="blue" />
       </div>
