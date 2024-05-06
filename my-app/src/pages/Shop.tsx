@@ -47,7 +47,7 @@ const Shop = () => {
             <div className={shopStyle.singleUpgrade} key={index}>
               <h2>{upgrade.name}</h2>
               {
-                upgrade.level && upgrade.level > 1 && <p>Level: {upgrade.level - 1}</p>
+                upgrade.level && upgrade.level > 1 && <p>Level: {upgrade.level - 1} / 5</p>
               }
               {
                 (!upgrade.owned || (Number(upgrade.level) < 6))?

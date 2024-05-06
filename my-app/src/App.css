@@ -6,6 +6,7 @@
     --text-color: #f0f0f0;
 }
 
+
 html, button {
     color: var(--text-color);
     font-family: "Bebas Neue", sans-serif;
@@ -23,6 +24,7 @@ html, button {
     transition-duration: 0.3s;
     text-decoration: none;
     margin: 0 0.25em;
+    white-space: nowrap;
 }
 
 .btn:hover, .alink:hover {
