@@ -13,8 +13,8 @@ const MainMenu = () => {
   return (
     <div className={mainMenuStyle.container}>
       <div className={mainMenuStyle.buttonsContainer}>
-        <h1 className={mainMenuStyle.header}>Protect the sun!</h1>
-        <h2 className={mainMenuStyle.sectionName}>Main Menu</h2>
+        <h2 className={mainMenuStyle.header}>Protect the sun!</h2>
+        <h1 className={mainMenuStyle.sectionName}>Main Menu</h1>
         <div className="linksContainer">
           <Link className={`alink`} to="/levels">Levels</Link>
           <Link className={`alink`} to="/shop">Go to Shop</Link>

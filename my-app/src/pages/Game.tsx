@@ -799,6 +799,7 @@ const Game: React.FC = () => {
 
   return (
   <div className={gameStyle.gameBackground} style={{ backgroundPosition: `${bgX}px ${bgY}px` }}>
+    <h1 style={{display: "none"}}>Game</h1>
       <div className={gameStyle.stats}>
         <p className={gameStyle.statsValue}>Money: {playerStats.money}</p>
         <p className={gameStyle.statsValue}>Level: {playerStats.level}</p>
