@@ -75,7 +75,6 @@ const Game: React.FC = () => {
     }
   }, [screenWidthReal, screenHeightReal])
 
-  // const [levelConfigCopy, setLevelConfigCopy] = useState(allLevels[playerStats.level - 1]);
   const [array, setArray] = useState(allLevels[playerStats.level - 1].enemies);
 
   // ----- PLAYER ----- //
