@@ -10,7 +10,7 @@ import Shop from './pages/Shop';
 const App = () => {
     return (
         <ContextProvider>
-            <Router>
+            <Router basename="/2023-p3a-mpa-react-project-TomasKrycfalusij">
                 <Routes>
                     <Route path="/" element={<MainMenu />} />
                     <Route path="/game" element={<Game />} />
