@@ -1,0 +1,21 @@
+.pageContainer {
+    text-align: center;
+}
+
+.upgradesMenu {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
+}
+
+.singleUpgrade {
+    width: 16em;
+    padding: 1em;
+    background-color: var(--dark-gray);
+    border-radius: 1em;
+}
+
+.moneyText {
+    font-size: 1.5em;
+}

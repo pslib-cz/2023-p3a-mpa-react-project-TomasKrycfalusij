@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+
+:root {
+    --dark-gray: #282c34;
+    --very-dark-gray: #1c1e24;
+    --text-color: #f0f0f0;
+}
+
+
+html, button {
+    color: var(--text-color);
+    font-family: "Bebas Neue", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 16px;
+}
+
+.btn, .alink {
+    background-color: var(--dark-gray);
+    color: var(--text-color);
+    border-radius: 0.5em;
+    padding: 0.5em 1em;
+    border: none;
+    transition-duration: 0.3s;
+    text-decoration: none;
+    margin: 0 0.25em;
+    white-space: nowrap;
+}
+
+.btn:hover, .alink:hover {
+    background-color: var(--very-dark-gray);
+}
+
+.linksContainer {
+    margin: 2em 0em;
+}
+
+.btnReversedColor {
+    background-color: var(--very-dark-gray);
+    border: 1px solid transparent;
+}
+
+.btnReversedColor:hover {
+    background-color: var(--dark-gray);
+    border: 1px solid gray;
+}

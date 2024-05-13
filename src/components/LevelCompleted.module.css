@@ -1,0 +1,13 @@
+.levelCompletedContainer {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    text-align: center;
+}
+
+.levelCompletedText {
+    margin: 0;
+    font-size: 3em;
+    color: var(--text-color);
+}

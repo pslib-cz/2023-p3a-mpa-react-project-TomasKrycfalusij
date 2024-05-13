@@ -1,0 +1,71 @@
+.gameBackground {
+    width: 100vw;
+    height: calc(100vh - 200px);
+    overflow: hidden;
+    background-image: url("../assets/backgrounds/spacetile.png");
+    background-repeat: repeat;
+    background-position: 0px 0px;
+    background-size: 50%;
+    user-select: none;
+}
+
+@media screen and (min-width: 960px) {
+    .gameBackground {
+        height: 100vh;
+    }
+}
+
+.stats {
+    position: absolute;
+    top: 50px;
+    left: 50px;
+    user-select: none;
+}
+.statsValue {
+    color: white;
+}
+
+.joystickContainer {
+    position: fixed;
+    bottom: 30px;
+    transform: translateX(-50%);
+    z-index: 99;
+    display: block;
+}
+
+.joystickRocketMovement {
+    left: 30%;
+    transform: translateX(-50%);
+}
+
+.joystickRocketRotation {
+    right: 30%;
+    transform: translateX(50%);
+}
+
+
+@media screen and (min-width: 960px) {
+    .joystickContainer {
+        display: none;
+    }
+}
+
+.youDiedContainer {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    text-align: center;
+}
+
+.youDiedText {
+    margin: 0;
+    font-size: 3em;
+    color: var(--text-color);
+}
+
+.adjustButtons {
+    position: absolute;
+    top: 1em;
+    left: 1em;
+}
