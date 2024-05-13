@@ -38,7 +38,7 @@ export const enemiesSelector: EnemyType[] = [
     missileFrequency: 2000,
     name: "Střelec",
     description: "Basic shooter. Doesn't do much, but you still need to be aware.",
-    texture: "./src/assets/enemies/Nairan - Torpedo Ship - Base.png"
+    texture: "./src/assets/enemies/nairan-torpedoship-base.png"
   },
   {
     id: "enemy2",
