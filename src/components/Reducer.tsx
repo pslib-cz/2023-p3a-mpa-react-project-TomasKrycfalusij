@@ -51,10 +51,10 @@ const initialUpgrades: Upgrade[] = [
 
 // Define the initial state
 export const initialState: State = {
-  money: 1000,
+  money: 0,
   health: 3,
   level: 1,
-  gameLevelReached: 7,
+  gameLevelReached: 1,
   upgrades: initialUpgrades,
 };
 
