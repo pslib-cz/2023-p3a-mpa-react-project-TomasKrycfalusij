@@ -26,7 +26,6 @@
     margin: 1rem;
 }
 
-
 .sectionName {
     font-size: 1.5em;
     margin: 1rem;
@@ -104,4 +103,8 @@
     100% {
         transform: translate(-50%, -50%) rotateZ(360deg);
     }
+}
+
+.bonusInfo {
+    text-align: center;
 }

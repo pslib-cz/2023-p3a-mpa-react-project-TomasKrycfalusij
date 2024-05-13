@@ -15,6 +15,7 @@ const MainMenu = () => {
       <div className={mainMenuStyle.buttonsContainer}>
         <h2 className={mainMenuStyle.header}>Protect the sun!</h2>
         <h1 className={mainMenuStyle.sectionName}>Main Menu</h1>
+        <p className={mainMenuStyle.bonusInfo}>We recommend connecting your laptop to power supply and enable graphics acceleration on your browser.</p>
         <div className="linksContainer">
           <Link className={`alink`} to="/levels">Levels</Link>
           <Link className={`alink`} to="/shop">Go to Shop</Link>
