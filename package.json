@@ -6,7 +6,7 @@
   "homepage": "https://pslib-cz.github.io/2023-p3a-mpa-react-project-TomasKrycfalusij",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build --base=/https://pslib-cz.github.io/2023-p3a-mpa-react-project-TomasKrycfalusij",
+    "build": "tsc && vite build --base=https://pslib-cz.github.io/2023-p3a-mpa-react-project-TomasKrycfalusij",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "deploy": "gh-pages -d dist"
