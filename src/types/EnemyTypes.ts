@@ -38,7 +38,7 @@ export const enemiesSelector: EnemyType[] = [
     missileFrequency: 2000,
     name: "Střelec",
     description: "Basic shooter. Doesn't do much, but you still need to be aware.",
-    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/public/enemies/nairan-torpedoship-base.png"
+    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/enemies/nairan-torpedoship-base.png"
   },
   {
     id: "enemy2",
@@ -57,7 +57,7 @@ export const enemiesSelector: EnemyType[] = [
     missileFrequency: 0,
     name: "Střelec",
     description: "Bomber. He is very annoying and fast. He'll get to you and then explode.",
-    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/public/enemies/nairan-scout-base.png"
+    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/enemies/nairan-scout-base.png"
   },
   {
     id: "enemy3",
@@ -76,7 +76,7 @@ export const enemiesSelector: EnemyType[] = [
     missileFrequency: 1000,
     name: "Střelec",
     description: "Advanced shooter. His accuracy and reload time makes it hard for you to avoid.",
-    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/public/enemies/nairan-frigate-base.png"
+    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/enemies/nairan-frigate-base.png"
   },
   {
     id: "enemy4",
@@ -95,7 +95,7 @@ export const enemiesSelector: EnemyType[] = [
     missileFrequency: 3000,
     name: "Střelec",
     description: "Surrounder. This enemy shoots 3 missiles at once.",
-    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/public/enemies/nairan-battlecruiser-base.png"
+    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/enemies/nairan-battlecruiser-base.png"
   },
   {
     id: "enemy5",
@@ -114,6 +114,6 @@ export const enemiesSelector: EnemyType[] = [
     missileFrequency: 4000,
     name: "Střelec",
     description: "The most powerful enemy. he is slow but his topedo missiles never miss.",
-    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/public/enemies/nairan-dreadnought-base.png"
+    texture: "./2023-p3a-mpa-react-project-TomasKrycfalusij/enemies/nairan-dreadnought-base.png"
   }
 ];
